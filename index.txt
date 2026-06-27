@@ -1,0 +1,23 @@
+psychology-admin
+├─ package.json
+├─ index.html
+├─ vite.config.js
+└─ src
+   ├─ main.js
+   ├─ App.vue
+   ├─ router
+   │  └─ index.js
+   ├─ stores
+   │  └─ user.js
+   ├─ layouts
+   │  └─ AdminLayout.vue
+   ├─ views
+   │  ├─ Login.vue
+   │  ├─ Dashboard.vue
+   │  ├─ StudentList.vue
+   │  ├─ TeacherList.vue
+   │  ├─ ClassStatistics.vue
+   │  ├─ AssessmentRecords.vue
+   │  └─ AiAdvice.vue
+   └─ styles
+      └─ global.css

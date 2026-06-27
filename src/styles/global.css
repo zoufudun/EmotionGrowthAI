@@ -1,0 +1,555 @@
+/* ==========================================================================
+   AI情绪成长管理系统 - 全局科技风样式系统 (Cyberpunk/Sci-Fi Theme)
+   ========================================================================== */
+
+:root {
+  --cyber-bg: #060b19;
+  --cyber-bg-gradient: radial-gradient(circle at 50% 50%, #0c1530 0%, #050a18 100%);
+  --cyber-panel: rgba(10, 20, 45, 0.65);
+  --cyber-panel-solid: #0d1632;
+  --cyber-primary: #00f2fe;
+  --cyber-primary-rgb: 0, 242, 254;
+  --cyber-secondary: #a78bfa;
+  --cyber-secondary-rgb: 167, 139, 250;
+  --cyber-success: #05f3ad;
+  --cyber-warning: #ffb800;
+  --cyber-danger: #ff4d4f;
+  --cyber-text: #e2e8f0;
+  --cyber-text-muted: #8499b4;
+  --cyber-border: rgba(0, 242, 254, 0.25);
+  --cyber-border-glow: rgba(0, 242, 254, 0.4);
+  --font-family-tech: "Orbitron", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Courier New", monospace, sans-serif;
+}
+
+/* 基础重置与滚动条 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
+  background-color: var(--cyber-bg);
+  background-image: var(--cyber-bg-gradient);
+  color: var(--cyber-text);
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(6, 11, 25, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cyber-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cyber-primary);
+  box-shadow: 0 0 8px var(--cyber-primary);
+}
+
+/* 科技风全局网格背景特效 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 主容器 */
+.page-container {
+  padding: 24px;
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* 页面标题科技风样式 */
+.page-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--cyber-primary);
+  padding-left: 16px;
+  position: relative;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+  letter-spacing: 1px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--cyber-text-muted);
+  margin-top: 4px;
+}
+
+/* 科技风玻璃拟态卡片 */
+.cyber-card {
+  background: var(--cyber-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--cyber-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(0, 242, 254, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cyber-card:hover {
+  border-color: var(--cyber-primary);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.08);
+  transform: translateY(-2px);
+}
+
+/* 卡片装饰角 */
+.cyber-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--cyber-primary);
+  border-left: 2px solid var(--cyber-primary);
+  pointer-events: none;
+}
+
+.cyber-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid var(--cyber-primary);
+  border-right: 2px solid var(--cyber-primary);
+  pointer-events: none;
+}
+
+.cyber-card-header {
+  border-bottom: 1px solid rgba(0, 242, 254, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.3);
+}
+
+/* 科技指标数值展示 */
+.cyber-stat-num {
+  font-family: var(--font-family-tech);
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--cyber-primary);
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  margin-top: 8px;
+}
+
+.cyber-stat-label {
+  font-size: 13px;
+  color: var(--cyber-text-muted);
+}
+
+/* 霓虹发光按钮 */
+.cyber-btn {
+  background: transparent !important;
+  border: 1px solid var(--cyber-primary) !important;
+  color: var(--cyber-primary) !important;
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.1) !important;
+  border-radius: 4px !important;
+  transition: all 0.3s !important;
+}
+
+.cyber-btn:hover {
+  background: rgba(0, 242, 254, 0.1) !important;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4) !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.cyber-btn-purple {
+  border-color: var(--cyber-secondary) !important;
+  color: var(--cyber-secondary) !important;
+  text-shadow: 0 0 5px rgba(167, 139, 250, 0.5);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.1) !important;
+}
+
+.cyber-btn-purple:hover {
+  background: rgba(167, 139, 250, 0.1) !important;
+  box-shadow: 0 0 15px rgba(167, 139, 250, 0.4) !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+/* 赛博警报呼吸效果 */
+.cyber-alert-pulse {
+  animation: alarmPulse 2s infinite alternate;
+}
+
+@keyframes alarmPulse {
+  0% {
+    box-shadow: 0 0 8px rgba(255, 77, 79, 0.2);
+    border-color: rgba(255, 77, 79, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 18px rgba(255, 77, 79, 0.6);
+    border-color: rgba(255, 77, 79, 0.8);
+  }
+}
+
+/* 呼吸效果的健康圆点 */
+.cyber-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  box-shadow: 0 0 8px currentColor;
+  animation: glowAnimation 1.5s infinite alternate;
+}
+
+@keyframes glowAnimation {
+  0% {
+    transform: scale(0.9);
+    filter: brightness(0.8) drop-shadow(0 0 2px currentColor);
+  }
+  100% {
+    transform: scale(1.1);
+    filter: brightness(1.2) drop-shadow(0 0 6px currentColor);
+  }
+}
+
+/* 科技风扫码/扫描动画特效 */
+.scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyber-primary), transparent);
+  animation: scan 3s linear infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* 赛博朋克文本故障动效 */
+.cyber-glitch-text {
+  position: relative;
+  animation: textGlitch 5s infinite;
+}
+
+@keyframes textGlitch {
+  0%, 95%, 100% {
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
+  }
+  96% {
+    text-shadow: -2px 0 red, 2px 0 blue;
+  }
+  97% {
+    text-shadow: 2px -1px green, -1px 2px violet;
+  }
+  98% {
+    text-shadow: -3px 2px purple, 3px -1px yellow;
+  }
+  99% {
+    text-shadow: 1px 1px var(--cyber-primary);
+  }
+}
+
+/* 表单与输入框科技感定制 (Antd Override) */
+.ant-form {
+  color: var(--cyber-text) !important;
+}
+
+.ant-input, 
+.ant-input-password, 
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-input-number {
+  background-color: rgba(6, 11, 25, 0.6) !important;
+  border: 1px solid var(--cyber-border) !important;
+  color: #fff !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s !important;
+}
+
+.ant-input:focus, 
+.ant-input-focused,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-input-number-focused {
+  border-color: var(--cyber-primary) !important;
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.35), inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ant-form-item-label > label {
+  color: var(--cyber-text-muted) !important;
+}
+
+.ant-select-arrow {
+  color: var(--cyber-primary) !important;
+}
+
+.ant-select-dropdown {
+  background-color: var(--cyber-panel-solid) !important;
+  border: 1px solid var(--cyber-border) !important;
+}
+
+.ant-select-item {
+  color: var(--cyber-text) !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: rgba(0, 242, 254, 0.15) !important;
+  color: var(--cyber-primary) !important;
+}
+
+.ant-select-item-option-active {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 表格科技风定制 */
+.ant-table {
+  background: transparent !important;
+  color: var(--cyber-text) !important;
+  border: 1px solid rgba(0, 242, 254, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background: rgba(13, 22, 50, 0.9) !important;
+  color: var(--cyber-primary) !important;
+  border-bottom: 1px solid rgba(0, 242, 254, 0.2) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(0, 242, 254, 0.1) !important;
+  background: rgba(8, 14, 32, 0.4) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: rgba(0, 242, 254, 0.08) !important;
+}
+
+.ant-pagination-item {
+  background-color: rgba(13, 22, 50, 0.8) !important;
+  border-color: var(--cyber-border) !important;
+}
+
+.ant-pagination-item a {
+  color: var(--cyber-text-muted) !important;
+}
+
+.ant-pagination-item-active {
+  border-color: var(--cyber-primary) !important;
+  background: rgba(0, 242, 254, 0.1) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--cyber-primary) !important;
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+  background-color: rgba(13, 22, 50, 0.8) !important;
+  border-color: var(--cyber-border) !important;
+  color: var(--cyber-text-muted) !important;
+}
+
+/* 抽屉(Drawer)和弹窗(Modal)科技风 */
+.ant-drawer-content {
+  background: var(--cyber-bg-gradient) !important;
+  color: var(--cyber-text) !important;
+  border-left: 1px solid var(--cyber-border) !important;
+}
+
+.ant-drawer-header {
+  border-bottom: 1px solid rgba(0, 242, 254, 0.15) !important;
+  background: var(--cyber-panel-solid) !important;
+}
+
+.ant-drawer-title {
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+}
+
+.ant-drawer-close {
+  color: var(--cyber-primary) !important;
+}
+
+.ant-modal-content {
+  background: var(--cyber-bg-gradient) !important;
+  color: var(--cyber-text) !important;
+  border: 1px solid var(--cyber-border) !important;
+  box-shadow: 0 0 30px rgba(0, 242, 254, 0.25) !important;
+}
+
+.ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 242, 254, 0.15) !important;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.ant-modal-title {
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.4) !important;
+}
+
+.ant-modal-close-x {
+  color: var(--cyber-primary) !important;
+}
+
+/* 选项卡 (Tabs) 科技感 */
+.ant-tabs-nav-list {
+  background: rgba(13, 22, 50, 0.6);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 242, 254, 0.15);
+}
+
+.ant-tabs-tab {
+  color: var(--cyber-text-muted) !important;
+  border-radius: 4px;
+  transition: all 0.3s !important;
+}
+
+.ant-tabs-tab-active {
+  background: rgba(0, 242, 254, 0.15) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--cyber-primary) !important;
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+
+.ant-tabs-ink-bar {
+  background: var(--cyber-primary) !important;
+}
+
+/* 全局动画定义 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 情绪卡片呼吸样式 */
+.mood-btn {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 12px;
+  text-align: center;
+  padding: 16px 12px;
+  position: relative;
+}
+
+.mood-btn:hover {
+  transform: scale(1.08);
+  border-color: var(--theme-color);
+  box-shadow: 0 0 15px var(--theme-shadow);
+}
+
+.mood-btn.active {
+  border-color: var(--theme-color);
+  background: rgba(var(--theme-color-rgb), 0.12);
+  box-shadow: 0 0 20px var(--theme-shadow);
+  color: #fff;
+}
+
+/* 数字流打字动效 */
+.cyber-typewriter {
+  font-family: Consolas, Monaco, monospace;
+  border-right: 2px solid var(--cyber-primary);
+  white-space: pre-wrap;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--cyber-primary); }
+}
+
+/* 角色浮动切换悬浮框 */
+.role-switcher-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: rgba(13, 22, 50, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--cyber-primary);
+  border-radius: 50px;
+  padding: 8px 16px;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
+
+.role-switcher-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+  border-color: #fff;
+}
