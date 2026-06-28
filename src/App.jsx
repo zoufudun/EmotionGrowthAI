@@ -12,6 +12,10 @@ import AssessmentRecords from './views/AssessmentRecords.jsx'
 import AiAdvice from './views/AiAdvice.jsx'
 import StudentDashboard from './views/StudentDashboard.jsx'
 import StudentProfile from './views/StudentProfile.jsx'
+import StudentAssessment from './views/StudentAssessment.jsx'
+import StudentCounseling from './views/StudentCounseling.jsx'
+import StudentGoals from './views/StudentGoals.jsx'
+import StudentMusic from './views/StudentMusic.jsx'
 import AdminPanel from './views/AdminPanel.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 
@@ -441,6 +445,10 @@ function AppContent() {
           
           {/* Student routes */}
           <Route path="student-dashboard" element={<StudentDashboard />} />
+          <Route path="student-assessment" element={<StudentAssessment />} />
+          <Route path="student-counseling" element={<StudentCounseling />} />
+          <Route path="student-goals" element={<StudentGoals />} />
+          <Route path="student-music" element={<StudentMusic />} />
           <Route path="student-profile" element={<StudentProfile />} />
           
           {/* Fallback route */}

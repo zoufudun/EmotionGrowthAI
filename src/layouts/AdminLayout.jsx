@@ -11,7 +11,10 @@ import {
   LogoutOutlined,
   ClockCircleOutlined,
   SlidersOutlined,
-  SettingOutlined
+  SettingOutlined,
+  HeartOutlined,
+  TrophyOutlined,
+  CustomerServiceOutlined
 } from '@ant-design/icons'
 import { UserContext } from '../App.jsx'
 
@@ -38,7 +41,15 @@ export default function AdminLayout() {
   // Dynamic Route Guard based on role
   useEffect(() => {
     if (userInfo && userInfo.role === 'student') {
-      if (location.pathname !== '/student-dashboard' && location.pathname !== '/student-profile') {
+      const allowedPaths = [
+        '/student-dashboard',
+        '/student-assessment',
+        '/student-counseling',
+        '/student-goals',
+        '/student-music',
+        '/student-profile'
+      ]
+      if (!allowedPaths.includes(location.pathname)) {
         navigate('/student-dashboard', { replace: true })
       }
     } else if (userInfo && userInfo.role === 'teacher') {
@@ -63,6 +74,26 @@ export default function AdminLayout() {
       key: '/student-dashboard',
       icon: <SlidersOutlined />,
       label: <Link to="/student-dashboard">心理成长空间</Link>,
+    },
+    {
+      key: '/student-assessment',
+      icon: <FileTextOutlined />,
+      label: <Link to="/student-assessment">心理测评中心</Link>,
+    },
+    {
+      key: '/student-counseling',
+      icon: <HeartOutlined />,
+      label: <Link to="/student-counseling">情绪疏导中心</Link>,
+    },
+    {
+      key: '/student-goals',
+      icon: <TrophyOutlined />,
+      label: <Link to="/student-goals">自我反馈与目标</Link>,
+    },
+    {
+      key: '/student-music',
+      icon: <CustomerServiceOutlined />,
+      label: <Link to="/student-music">心灵音乐屋</Link>,
     },
     {
       key: '/student-profile',
