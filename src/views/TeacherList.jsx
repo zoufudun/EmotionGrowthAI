@@ -1,15 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Table, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd'
 import { PlusOutlined, EditOutlined, PoweroffOutlined, PhoneOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
 export default function TeacherList() {
-  const [teachers, setTeachers] = useState([
-    { id: 1, name: '陈老师', phone: '13800000001', classes: '高一1班、高一2班', status: '启用' },
-    { id: 2, name: '刘老师', phone: '13800000002', classes: '高二1班', status: '启用' },
-    { id: 3, name: '张老师', phone: '13800000003', classes: '高三4班', status: '禁用' }
-  ])
+  const [teachers, setTeachers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('teachersList')
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    const seed = [
+      { id: 1, name: '陈老师', phone: '13800000001', classes: '高一1班、高一2班', status: '启用' }
+    ]
+    localStorage.setItem('teachersList', JSON.stringify(seed))
+    return seed
+  })
+
+  useEffect(() => {
+    localStorage.setItem('teachersList', JSON.stringify(teachers))
+  }, [teachers])
 
   const [modalVisible, setModalVisible] = useState(false)
   const [form] = Form.useForm()

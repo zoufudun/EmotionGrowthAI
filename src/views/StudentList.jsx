@@ -27,11 +27,7 @@ export default function StudentList() {
     } catch {}
     // Fallback seed
     const seed = [
-      { id: 1, name: '默认学生', gender: '男', className: '高一1班', score: 82, risk: '正常', counselor: '陈老师', moodTrend: [75, 78, 80, 85, 82], dimensions: [80, 85, 70, 78, 82], interventions: [] },
-      { id: 2, name: '李四', gender: '女', className: '高一2班', score: 61, risk: '轻度关注', counselor: '陈老师', moodTrend: [70, 68, 62, 59, 61], dimensions: [60, 50, 65, 58, 63], interventions: [] },
-      { id: 3, name: '王五', gender: '男', className: '高二1班', score: 45, risk: '重点关注', counselor: '刘老师', moodTrend: [60, 55, 48, 42, 45], dimensions: [40, 30, 48, 50, 45], interventions: [] },
-      { id: 4, name: '赵六', gender: '女', className: '高三4班', score: 52, risk: '中度关注', counselor: '刘老师', moodTrend: [68, 62, 58, 50, 52], dimensions: [50, 42, 55, 60, 50], interventions: [] },
-      { id: 5, name: '孙七', gender: '男', className: '高一1班', score: 94, risk: '正常', counselor: '陈老师', moodTrend: [88, 90, 92, 95, 94], dimensions: [90, 92, 85, 88, 94], interventions: [] }
+      { id: 1, name: '默认学生', gender: '男', className: '高一1班', school: '朝阳区第一实验小学', idCard: '110101201001011234', score: 82, risk: '正常', counselor: '陈老师', moodTrend: [75, 78, 80, 85, 82], dimensions: [80, 85, 70, 78, 82], interventions: [] }
     ]
     localStorage.setItem('studentsList', JSON.stringify(seed))
     return seed
@@ -217,6 +213,7 @@ export default function StudentList() {
     { title: '姓名', dataIndex: 'name', key: 'name' },
     { title: '性别', dataIndex: 'gender', key: 'gender' },
     { title: '班级', dataIndex: 'className', key: 'className' },
+    { title: '所属学校', dataIndex: 'school', key: 'school', render: (s) => s || '朝阳区第一实验小学' },
     { title: '指导咨询师', dataIndex: 'counselor', key: 'counselor' },
     {
       title: '最近测评分',
@@ -363,6 +360,8 @@ export default function StudentList() {
             </div>
 
             <Descriptions bordered size="small" column={2} className="cyber-card" style={{ padding: 12, marginBottom: 24 }}>
+              <Descriptions.Item label="所属学校" span={2}>{selectedStudent.school || '朝阳区第一实验小学'}</Descriptions.Item>
+              <Descriptions.Item label="身份证号" span={2}>{selectedStudent.idCard || '110101201001011234'}</Descriptions.Item>
               <Descriptions.Item label="班级">{selectedStudent.className}</Descriptions.Item>
               <Descriptions.Item label="辅导老师">{selectedStudent.counselor}</Descriptions.Item>
               <Descriptions.Item label="测评分数" span={2}>

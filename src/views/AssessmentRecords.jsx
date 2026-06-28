@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table, Button, Card, Tag, Space, Modal, Descriptions, List, Badge } from 'antd'
 import { FileTextOutlined, RobotOutlined, BookOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -8,64 +8,41 @@ export default function AssessmentRecords() {
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState(null)
 
-  const records = [
-    {
-      id: 1,
-      studentName: '张三',
-      className: '高一1班',
-      score: 82,
-      risk: '正常',
-      time: '2026-06-25 10:20',
-      answers: [
-        { q: '我觉得自己的生活充满意义和价值', a: '同意' },
-        { q: '面对突如其来的学业挑战时，我能迅速调整心态', a: '同意' },
-        { q: '近两周我有经常失眠或多梦的状况', a: '不同意' },
-        { q: '我乐意并能够顺畅地与班级同学打交道', a: '非常同意' }
-      ]
-    },
-    {
-      id: 2,
-      studentName: '李四',
-      className: '高一2班',
-      score: 61,
-      risk: '轻度关注',
-      time: '2026-06-25 11:10',
-      answers: [
-        { q: '我觉得自己的生活充满意义和价值', a: '有些同意' },
-        { q: '面对突如其来的学业挑战时，我能迅速调整心态', a: '不同意' },
-        { q: '近两周我有经常失眠或多梦的状况', a: '经常如此' },
-        { q: '我乐意并能够顺畅地与班级同学打交道', a: '不同意' }
-      ]
-    },
-    {
-      id: 3,
-      studentName: '王五',
-      className: '高二1班',
-      score: 45,
-      risk: '重点关注',
-      time: '2026-06-25 14:35',
-      answers: [
-        { q: '我觉得自己的生活充满意义和价值', a: '非常不同意' },
-        { q: '面对突如其来的学业挑战时，我能迅速调整心态', a: '非常不同意' },
-        { q: '近两周我有经常失眠或多梦的状况', a: '总是这样' },
-        { q: '我乐意并能够顺畅地与班级同学打交道', a: '非常不同意' }
-      ]
-    },
-    {
-      id: 4,
-      studentName: '赵六',
-      className: '高三4班',
-      score: 52,
-      risk: '中度关注',
-      time: '2026-06-24 16:40',
-      answers: [
-        { q: '我觉得自己的生活充满意义和价值', a: '不同意' },
-        { q: '面对突如其来的学业挑战时，我能迅速调整心态', a: '有些不同意' },
-        { q: '近两周我有经常失眠或多梦的状况', a: '经常如此' },
-        { q: '我乐意并能够顺畅地与班级同学打交道', a: '不同意' }
-      ]
-    }
-  ]
+  const [records, setRecords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('assessmentRecords')
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    
+    // Seed with only 默认学生
+    const seed = [
+      {
+        id: 1,
+        studentName: '默认学生',
+        className: '高一1班',
+        score: 82,
+        risk: '正常',
+        time: '2026-06-25 10:20',
+        answers: [
+          { q: '我确实能够相信自己走的每一步路都在为未来的成功奠定基石吗？', a: '同意' },
+          { q: '我确实对自己人生的主控权充满信心，相信命运掌握在自己手中？', a: '同意' },
+          { q: '经常遇到不擅长的学科，我第一反应是选择彻底躺平，不再挣扎？', a: '不同意' },
+          { q: '经常每当面对新任务时，我总是产生了畏难情绪，迟迟不肯动手。', a: '非常不同意' }
+        ]
+      }
+    ]
+    localStorage.setItem('assessmentRecords', JSON.stringify(seed))
+    return seed
+  })
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('assessmentRecords')
+      if (saved) {
+        setRecords(JSON.parse(saved))
+      }
+    } catch {}
+  }, [])
 
   const showDetailModal = (record) => {
     setSelectedRecord(record)

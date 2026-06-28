@@ -78,6 +78,11 @@ export default function AdminLayout() {
       label: <Link to="/students">学生管理</Link>,
     },
     {
+      key: '/classes',
+      icon: <BarChartOutlined />,
+      label: <Link to="/classes">班级管理</Link>,
+    },
+    {
       key: '/assessments',
       icon: <FileTextOutlined />,
       label: <Link to="/assessments">测评记录</Link>,

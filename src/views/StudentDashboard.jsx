@@ -393,6 +393,34 @@ export default function StudentDashboard() {
       console.error(e)
     }
 
+    // Save to assessmentRecords list in localStorage
+    try {
+      const savedRecords = JSON.parse(localStorage.getItem('assessmentRecords') || '[]')
+      const pad = (n) => String(n).padStart(2, '0')
+      const now = new Date()
+      const timeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+      
+      const newRecord = {
+        id: savedRecords.length > 0 ? Math.max(...savedRecords.map(r => r.id)) + 1 : 1,
+        studentName: userInfo.nickname,
+        className: userInfo.className || '未配置班级',
+        score: totalScore,
+        risk: riskLevel,
+        time: timeStr,
+        answers: activeQuestions.map((q, idx) => {
+          const selectedVal = answers[idx]
+          const matchedOption = q.options.find(opt => opt.val === selectedVal)
+          return {
+            q: q.text,
+            a: matchedOption ? matchedOption.label : '未答题'
+          }
+        })
+      }
+      localStorage.setItem('assessmentRecords', JSON.stringify([newRecord, ...savedRecords]))
+    } catch (e) {
+      console.error(e)
+    }
+
     addLog(
       'operation',
       `${userInfo.nickname} (student)`,
