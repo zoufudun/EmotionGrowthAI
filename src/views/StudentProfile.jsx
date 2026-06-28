@@ -425,9 +425,14 @@ export default function StudentProfile() {
         bodyStyle={{ textAlign: 'center' }}
       >
         <div style={{ padding: '20px 0' }}>
-          <QrcodeOutlined style={{ fontSize: 150, color: 'var(--cyber-primary)', filter: 'drop-shadow(0 0 10px rgba(0,242,254,0.3))' }} />
-          <div style={{ marginTop: 16, color: 'var(--cyber-text-muted)', fontSize: 12 }}>
-            请使用微信扫描上方二维码进行安全身份验证与绑定
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=00f2fe&bgcolor=111827&data=${encodeURIComponent(window.location.href)}`} 
+            alt="微信绑定二维码" 
+            style={{ width: 160, height: 160, margin: '0 auto 16px auto', display: 'block', borderRadius: 8, border: '2px solid var(--cyber-primary)', boxShadow: '0 0 15px rgba(0,242,254,0.3)' }}
+          />
+          <div style={{ marginTop: 16, color: 'var(--cyber-text-muted)', fontSize: 12, lineHeight: '1.6' }}>
+            请使用微信扫描上方二维码进行安全身份验证。<br />
+            <span style={{ color: 'var(--cyber-primary)' }}>（扫码将引导至本系统网页，可在手机端查看）</span>
           </div>
         </div>
       </Modal>
@@ -445,9 +450,14 @@ export default function StudentProfile() {
         bodyStyle={{ textAlign: 'center' }}
       >
         <div style={{ padding: '20px 0' }}>
-          <QrcodeOutlined style={{ fontSize: 150, color: 'var(--cyber-secondary)', filter: 'drop-shadow(0 0 10px rgba(167,139,250,0.3))' }} />
-          <div style={{ marginTop: 16, color: 'var(--cyber-text-muted)', fontSize: 12 }}>
-            请使用手机 QQ 扫描上方二维码进行安全身份验证与绑定
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=a78bfa&bgcolor=111827&data=${encodeURIComponent(window.location.href)}`} 
+            alt="QQ绑定二维码" 
+            style={{ width: 160, height: 160, margin: '0 auto 16px auto', display: 'block', borderRadius: 8, border: '2px solid var(--cyber-secondary)', boxShadow: '0 0 15px rgba(167,139,250,0.3)' }}
+          />
+          <div style={{ marginTop: 16, color: 'var(--cyber-text-muted)', fontSize: 12, lineHeight: '1.6' }}>
+            请使用手机 QQ 扫描上方二维码进行安全身份验证。<br />
+            <span style={{ color: 'var(--cyber-secondary)' }}>（扫码将引导至本系统网页，可在手机端查看）</span>
           </div>
         </div>
       </Modal>
