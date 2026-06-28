@@ -14,7 +14,8 @@ import {
   SettingOutlined,
   HeartOutlined,
   TrophyOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons'
 import { UserContext } from '../App.jsx'
 
@@ -47,7 +48,8 @@ export default function AdminLayout() {
         '/student-counseling',
         '/student-goals',
         '/student-music',
-        '/student-profile'
+        '/student-profile',
+        '/about'
       ]
       if (!allowedPaths.includes(location.pathname)) {
         navigate('/student-dashboard', { replace: true })
@@ -99,6 +101,11 @@ export default function AdminLayout() {
       key: '/student-profile',
       icon: <UserOutlined />,
       label: <Link to="/student-profile">个人资料设置</Link>,
+    },
+    {
+      key: '/about',
+      icon: <InfoCircleOutlined />,
+      label: <Link to="/about">关于系统</Link>,
     }
   ]
 
@@ -128,6 +135,11 @@ export default function AdminLayout() {
       icon: <RobotOutlined />,
       label: <Link to="/ai-advice">AI成长建议</Link>,
     },
+    {
+      key: '/about',
+      icon: <InfoCircleOutlined />,
+      label: <Link to="/about">关于系统</Link>,
+    }
   ]
 
   const adminMenuItems = [
@@ -166,6 +178,11 @@ export default function AdminLayout() {
       icon: <SettingOutlined />,
       label: <Link to="/admin-panel">系统管理中心</Link>,
     },
+    {
+      key: '/about',
+      icon: <InfoCircleOutlined />,
+      label: <Link to="/about">关于系统</Link>,
+    }
   ]
 
   // Dynamically select menu items based on role
@@ -212,38 +229,44 @@ export default function AdminLayout() {
         }}
       >
         <div style={{ 
-          height: 64, 
+          height: 75, 
           display: 'flex', 
+          flexDirection: 'column',
           alignItems: 'center', 
           justifyContent: 'center', 
           borderBottom: '1px solid rgba(0, 242, 254, 0.15)',
-          gap: 8
+          padding: '8px 0'
         }}>
-          {/* Animated Brain Wave Ring */}
-          <div style={{
-            width: 24,
-            height: 24,
-            borderRadius: '50%',
-            border: '2px solid var(--cyber-primary)',
-            boxShadow: '0 0 8px var(--cyber-primary)',
-            animation: 'glowAnimation 1.5s infinite alternate',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 10,
-            color: 'var(--cyber-primary)'
-          }}>
-            Ψ
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Animated Brain Wave Ring */}
+            <div style={{
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              border: '2px solid var(--cyber-primary)',
+              boxShadow: '0 0 8px var(--cyber-primary)',
+              animation: 'glowAnimation 1.5s infinite alternate',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 10,
+              color: 'var(--cyber-primary)'
+            }}>
+              Ψ
+            </div>
+            <span style={{ 
+              color: '#fff', 
+              fontWeight: 'bold', 
+              fontSize: 15, 
+              letterSpacing: 1.0,
+              textShadow: '0 0 8px rgba(0, 242, 254, 0.5)'
+            }}>
+              EmotionGrowth AI
+            </span>
           </div>
-          <span style={{ 
-            color: '#fff', 
-            fontWeight: 'bold', 
-            fontSize: 15, 
-            letterSpacing: 1.0,
-            textShadow: '0 0 8px rgba(0, 242, 254, 0.5)'
-          }}>
-            EmotionGrowth AI
-          </span>
+          <div style={{ fontSize: 9, color: 'var(--cyber-text-muted)', letterSpacing: 0.5, marginTop: 2 }}>
+            By 邹钰萧
+          </div>
         </div>
         
         <Menu
@@ -266,7 +289,7 @@ export default function AdminLayout() {
           textAlign: 'center'
         }}>
           <div className="cyber-card" style={{ padding: '12px 8px', marginBottom: 0, fontSize: 11, background: 'rgba(6,11,25,0.5)' }}>
-            <span style={{ color: 'var(--cyber-primary)' }}>AI CORE ACTIVE</span>
+            <span style={{ color: 'var(--cyber-primary)' }}>AI CORE ACTIVE By 邹钰萧</span>
             <div style={{ color: 'var(--cyber-text-muted)', fontSize: 9, marginTop: 4 }}>V1.0.0-SECURE</div>
           </div>
         </div>

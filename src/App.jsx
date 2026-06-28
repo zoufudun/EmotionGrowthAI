@@ -16,6 +16,7 @@ import StudentAssessment from './views/StudentAssessment.jsx'
 import StudentCounseling from './views/StudentCounseling.jsx'
 import StudentGoals from './views/StudentGoals.jsx'
 import StudentMusic from './views/StudentMusic.jsx'
+import About from './views/About.jsx'
 import AdminPanel from './views/AdminPanel.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 
@@ -442,6 +443,7 @@ function AppContent() {
           <Route path="assessments" element={<AssessmentRecords />} />
           <Route path="ai-advice" element={<AiAdvice />} />
           <Route path="admin-panel" element={<AdminPanel />} />
+          <Route path="about" element={<About />} />
           
           {/* Student routes */}
           <Route path="student-dashboard" element={<StudentDashboard />} />

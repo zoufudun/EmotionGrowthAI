@@ -236,10 +236,13 @@ export default function Login() {
             fontSize: 24,
             fontWeight: 'bold',
             letterSpacing: 2,
-            marginBottom: 6
+            marginBottom: 2
           }}>
             EmotionGrowth AI
           </h2>
+          <div style={{ fontSize: 13, color: 'var(--cyber-primary)', fontWeight: 'bold', marginBottom: 8 }}>
+            By 邹钰萧
+          </div>
           <p style={{ color: 'var(--cyber-text-muted)', fontSize: 12 }}>
             EMOTION & COGNITIVE INTELLIGENCE SYSTEM
           </p>
