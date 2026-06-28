@@ -38,7 +38,7 @@ export default function AdminLayout() {
   // Dynamic Route Guard based on role
   useEffect(() => {
     if (userInfo && userInfo.role === 'student') {
-      if (location.pathname !== '/student-dashboard') {
+      if (location.pathname !== '/student-dashboard' && location.pathname !== '/student-profile') {
         navigate('/student-dashboard', { replace: true })
       }
     } else if (userInfo && userInfo.role === 'teacher') {
@@ -63,6 +63,11 @@ export default function AdminLayout() {
       key: '/student-dashboard',
       icon: <SlidersOutlined />,
       label: <Link to="/student-dashboard">心理成长空间</Link>,
+    },
+    {
+      key: '/student-profile',
+      icon: <UserOutlined />,
+      label: <Link to="/student-profile">个人资料设置</Link>,
     }
   ]
 

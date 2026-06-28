@@ -11,7 +11,14 @@ export default function AssessmentRecords() {
   const [records, setRecords] = useState(() => {
     try {
       const saved = localStorage.getItem('assessmentRecords')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const cleaned = parsed.filter(r => r.studentName !== '张三' && r.studentName !== '李四' && r.studentName !== '王五' && r.studentName !== '赵六' && r.studentName !== '孙七')
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('assessmentRecords', JSON.stringify(cleaned))
+        }
+        return cleaned
+      }
     } catch {}
     
     // Seed with only 默认学生
@@ -39,7 +46,9 @@ export default function AssessmentRecords() {
     try {
       const saved = localStorage.getItem('assessmentRecords')
       if (saved) {
-        setRecords(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        const cleaned = parsed.filter(r => r.studentName !== '张三' && r.studentName !== '李四' && r.studentName !== '王五' && r.studentName !== '赵六' && r.studentName !== '孙七')
+        setRecords(cleaned)
       }
     } catch {}
   }, [])

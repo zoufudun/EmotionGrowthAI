@@ -11,6 +11,7 @@ import ClassStatistics from './views/ClassStatistics.jsx'
 import AssessmentRecords from './views/AssessmentRecords.jsx'
 import AiAdvice from './views/AiAdvice.jsx'
 import StudentDashboard from './views/StudentDashboard.jsx'
+import StudentProfile from './views/StudentProfile.jsx'
 import AdminPanel from './views/AdminPanel.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 
@@ -98,6 +99,41 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('assignedTasks', JSON.stringify(assignedTasks))
   }, [assignedTasks])
+
+  // Self-healing database cleanup for old seed data
+  useEffect(() => {
+    try {
+      const savedStudents = localStorage.getItem('studentsList')
+      if (savedStudents) {
+        const parsed = JSON.parse(savedStudents)
+        const cleaned = parsed.filter(s => s.name !== '张三' && s.name !== '李四' && s.name !== '王五' && s.name !== '赵六' && s.name !== '孙七')
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('studentsList', JSON.stringify(cleaned))
+        }
+      }
+
+      const savedRecords = localStorage.getItem('assessmentRecords')
+      if (savedRecords) {
+        const parsed = JSON.parse(savedRecords)
+        const cleaned = parsed.filter(r => r.studentName !== '张三' && r.studentName !== '李四' && r.studentName !== '王五' && r.studentName !== '赵六' && r.studentName !== '孙七')
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('assessmentRecords', JSON.stringify(cleaned))
+        }
+      }
+      
+      const savedTasks = localStorage.getItem('assignedTasks')
+      if (savedTasks) {
+        const parsed = JSON.parse(savedTasks)
+        const cleaned = parsed.filter(t => t.studentName !== '李四' && t.studentName !== '王五' && t.studentName !== '赵六' && t.studentName !== '孙七' && t.studentName !== '张三')
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('assignedTasks', JSON.stringify(cleaned))
+          setAssignedTasks(cleaned)
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }, [])
 
   // === 4. Core Context Functions ===
   const login = (username, password) => {
@@ -237,6 +273,40 @@ export const UserProvider = ({ children }) => {
     }
   }
 
+  const cancelAccount = (userId) => {
+    const targetUser = users.find(u => u.id === userId)
+    if (!targetUser) return
+
+    // 1. Remove from registered users list
+    setUsers(prev => prev.filter(u => u.id !== userId))
+    
+    // 2. If it is a student, delete their profile record from studentsList
+    if (targetUser.role === 'student') {
+      try {
+        const currentStudents = JSON.parse(localStorage.getItem('studentsList') || '[]')
+        const updatedStudents = currentStudents.filter(s => s.name !== targetUser.nickname)
+        localStorage.setItem('studentsList', JSON.stringify(updatedStudents))
+        
+        // Also delete their assessment records
+        const currentRecords = JSON.parse(localStorage.getItem('assessmentRecords') || '[]')
+        const updatedRecords = currentRecords.filter(r => r.studentName !== targetUser.nickname)
+        localStorage.setItem('assessmentRecords', JSON.stringify(updatedRecords))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    addLog('operation', `${targetUser.nickname || '未知用户'} (${targetUser.role || '未知角色'})`, '用户账号已注销并清除个人心理档案')
+
+    // 3. Clear session and log out
+    setToken('')
+    setUserInfo({})
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+    
+    message.success('您的账号已注销成功，感谢您的使用！')
+  }
+
   return (
     <UserContext.Provider value={{
       token,
@@ -371,6 +441,7 @@ function AppContent() {
           
           {/* Student routes */}
           <Route path="student-dashboard" element={<StudentDashboard />} />
+          <Route path="student-profile" element={<StudentProfile />} />
           
           {/* Fallback route */}
           <Route

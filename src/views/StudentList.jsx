@@ -23,7 +23,15 @@ export default function StudentList() {
   const [allStudents, setAllStudents] = useState(() => {
     try {
       const saved = localStorage.getItem('studentsList')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        // Self-healing database cleanup
+        const cleaned = parsed.filter(s => s.name !== '张三' && s.name !== '李四' && s.name !== '王五' && s.name !== '赵六' && s.name !== '孙七')
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('studentsList', JSON.stringify(cleaned))
+        }
+        return cleaned
+      }
     } catch {}
     // Fallback seed
     const seed = [
@@ -66,7 +74,26 @@ export default function StudentList() {
   }
 
   const showDrawer = (student) => {
-    setSelectedStudent(student)
+    let fullProfile = {}
+    try {
+      const allUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]')
+      const matched = allUsers.find(u => u.role === 'student' && u.nickname === student.name)
+      if (matched) {
+        fullProfile = matched
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
+    setSelectedStudent({
+      ...student,
+      username: fullProfile.username || '暂无账号',
+      bio: fullProfile.bio || '好好学习，天天向上！',
+      wechat: fullProfile.wechat || '未绑定',
+      qq: fullProfile.qq || '未绑定',
+      email: fullProfile.email || '未配置',
+      schoolStage: fullProfile.schoolStage || '未指定'
+    })
     setDrawerVisible(true)
   }
 
@@ -360,13 +387,20 @@ export default function StudentList() {
             </div>
 
             <Descriptions bordered size="small" column={2} className="cyber-card" style={{ padding: 12, marginBottom: 24 }}>
+              <Descriptions.Item label="登录账号">{selectedStudent.username}</Descriptions.Item>
+              <Descriptions.Item label="性别">{selectedStudent.gender}</Descriptions.Item>
               <Descriptions.Item label="所属学校" span={2}>{selectedStudent.school || '朝阳区第一实验小学'}</Descriptions.Item>
+              <Descriptions.Item label="学校学段">{selectedStudent.schoolStage || '未指定'}</Descriptions.Item>
+              <Descriptions.Item label="所属班级">{selectedStudent.className}</Descriptions.Item>
               <Descriptions.Item label="身份证号" span={2}>{selectedStudent.idCard || '110101201001011234'}</Descriptions.Item>
-              <Descriptions.Item label="班级">{selectedStudent.className}</Descriptions.Item>
               <Descriptions.Item label="辅导老师">{selectedStudent.counselor}</Descriptions.Item>
-              <Descriptions.Item label="测评分数" span={2}>
+              <Descriptions.Item label="测评分数">
                 <span style={{ fontSize: 16, fontWeight: 'bold', color: 'var(--cyber-primary)' }}>{selectedStudent.score} 分</span>
               </Descriptions.Item>
+              <Descriptions.Item label="微信绑定">{selectedStudent.wechat}</Descriptions.Item>
+              <Descriptions.Item label="QQ 绑定">{selectedStudent.qq}</Descriptions.Item>
+              <Descriptions.Item label="联系邮箱" span={2}>{selectedStudent.email}</Descriptions.Item>
+              <Descriptions.Item label="个人简介/签名" span={2}>{selectedStudent.bio}</Descriptions.Item>
             </Descriptions>
 
             <Divider orientation="left" style={{ borderColor: 'rgba(0, 242, 254, 0.15)', color: '#fff' }}>情绪评测成长趋势</Divider>

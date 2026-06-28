@@ -126,6 +126,8 @@ export default function StudentDashboard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState({})
   const [testResult, setTestResult] = useState(null)
+  const [hasDraft, setHasDraft] = useState(false)
+  const [draftData, setDraftData] = useState(null)
 
   // Shuffle & Pick 20 questions
   const generateRandomQuestions = () => {
@@ -152,8 +154,94 @@ export default function StudentDashboard() {
   }
 
   useEffect(() => {
+    try {
+      const draft = localStorage.getItem('testDraft_' + userInfo.username)
+      if (draft) {
+        const parsed = JSON.parse(draft)
+        if (parsed.activeQuestions && parsed.activeQuestions.length > 0) {
+          setHasDraft(true)
+          setDraftData(parsed)
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
+    // Load diary draft on mount
+    try {
+      const diaryDraft = localStorage.getItem('diaryDraft_' + userInfo.username)
+      if (diaryDraft) {
+        const parsed = JSON.parse(diaryDraft)
+        if (parsed.selectedMood) setSelectedMood(parsed.selectedMood)
+        if (parsed.checkInDiary) setCheckInDiary(parsed.checkInDiary)
+        if (parsed.selectedGoals) setSelectedGoals(parsed.selectedGoals)
+        message.info('已为您自动载入上次保存的日记打卡草稿。')
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
     setActiveQuestions(generateRandomQuestions())
   }, [])
+
+  const handleSaveTestDraft = () => {
+    try {
+      const draft = {
+        activeQuestions,
+        currentStep,
+        answers
+      }
+      localStorage.setItem('testDraft_' + userInfo.username, JSON.stringify(draft))
+      message.success('测评进度暂存成功！您可以在下次打开时恢复。')
+    } catch (e) {
+      console.error(e)
+      message.error('草稿保存失败')
+    }
+  }
+
+  const handleRestoreTestDraft = () => {
+    if (draftData) {
+      setActiveQuestions(draftData.activeQuestions)
+      setCurrentStep(draftData.currentStep)
+      setAnswers(draftData.answers)
+      setHasDraft(false)
+      setDraftData(null)
+      message.success('已恢复测评进度！')
+    }
+  }
+
+  const handleDiscardTestDraft = () => {
+    localStorage.removeItem('testDraft_' + userInfo.username)
+    setHasDraft(false)
+    setDraftData(null)
+    setActiveQuestions(generateRandomQuestions())
+    setCurrentStep(0)
+    setAnswers({})
+    message.info('已清除草稿，重新开始测评。')
+  }
+
+  const handleSaveDiaryDraft = () => {
+    try {
+      const draft = {
+        selectedMood,
+        checkInDiary,
+        selectedGoals
+      }
+      localStorage.setItem('diaryDraft_' + userInfo.username, JSON.stringify(draft))
+      message.success('今日打卡内容已存为草稿！')
+    } catch (e) {
+      console.error(e)
+      message.error('草稿保存失败')
+    }
+  }
+
+  const handleClearDiaryDraft = () => {
+    localStorage.removeItem('diaryDraft_' + userInfo.username)
+    setSelectedMood(null)
+    setCheckInDiary('')
+    setSelectedGoals([])
+    message.info('打卡草稿已清空。')
+  }
 
   // Cool loader animation sequence
   useEffect(() => {
@@ -305,6 +393,7 @@ export default function StudentDashboard() {
       setCheckInHistory([newRecord, ...checkInHistory])
       setCurrentFeedback(newRecord)
       setAiLoading(false)
+      localStorage.removeItem('diaryDraft_' + userInfo.username)
 
       addLog(
         'operation',
@@ -426,6 +515,10 @@ export default function StudentDashboard() {
       `${userInfo.nickname} (student)`,
       `完成了20道随机心理自主测评（得分: ${totalScore}, 结果为: ${riskLevel}）`
     )
+
+    localStorage.removeItem('testDraft_' + userInfo.username)
+    setHasDraft(false)
+    setDraftData(null)
 
     message.success('评测提交成功，AI已生成您的专属心理报告')
   }
@@ -807,6 +900,22 @@ export default function StudentDashboard() {
                           >
                             <RobotOutlined /> ✨ 生成 AI 情绪成长分析并提交打卡
                           </Button>
+
+                          <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                            <Button
+                              onClick={handleSaveDiaryDraft}
+                              style={{ flex: 1, borderColor: 'var(--cyber-primary)', color: 'var(--cyber-primary)', background: 'transparent' }}
+                            >
+                              暂存为日记草稿
+                            </Button>
+                            <Button
+                              danger
+                              onClick={handleClearDiaryDraft}
+                              style={{ border: '1px solid #ff4d4f', color: '#ff4d4f', background: 'transparent' }}
+                            >
+                              清空草稿
+                            </Button>
+                          </div>
                         </div>
                       ) : aiLoading ? (
                         <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(6, 11, 25, 0.4)', borderRadius: 8, position: 'relative' }}>
@@ -1054,6 +1163,29 @@ export default function StudentDashboard() {
                 <div style={{ marginTop: 16, maxWidth: 800, margin: '16px auto' }}>
                   {!testResult ? (
                     <div>
+                      {hasDraft && (
+                        <Alert
+                          message="检测到未完成的量表测评草稿"
+                          description={
+                            <div style={{ color: 'var(--cyber-text-muted)', fontSize: 12 }}>
+                              您上次评测进行到了第 <strong>{draftData?.currentStep + 1}</strong> 题，已选中 <strong>{Object.keys(draftData?.answers || {}).length}</strong> 道题目的答案。您可以恢复该进度，或清除该草稿重新开始。
+                            </div>
+                          }
+                          type="info"
+                          showIcon
+                          action={
+                            <Space direction="vertical" style={{ width: '100%', marginTop: 8 }}>
+                              <Button size="small" type="primary" className="cyber-btn" onClick={handleRestoreTestDraft}>
+                                恢复上次进度
+                              </Button>
+                              <Button size="small" danger onClick={handleDiscardTestDraft} style={{ border: '1px solid #ff4d4f', color: '#ff4d4f', background: 'transparent' }}>
+                                清除草稿重新开始
+                              </Button>
+                            </Space>
+                          }
+                          style={{ marginBottom: 20, border: '1px solid rgba(0, 242, 254, 0.2)', background: 'rgba(0, 242, 254, 0.05)' }}
+                        />
+                      )}
                       {/* Upgraded Progress Indicator */}
                       <div style={{ marginBottom: 20 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--cyber-text-muted)', fontSize: 13, marginBottom: 8 }}>
@@ -1098,11 +1230,15 @@ export default function StudentDashboard() {
                         </Radio.Group>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                         <Button disabled={currentStep === 0} onClick={handlePrev}>
                           上一题
                         </Button>
                         
+                        <Button onClick={handleSaveTestDraft} style={{ borderColor: 'var(--cyber-primary)', color: 'var(--cyber-primary)', background: 'transparent' }}>
+                          暂存草稿
+                        </Button>
+
                         {currentStep < activeQuestions.length - 1 ? (
                           <Button type="primary" className="cyber-btn" onClick={handleNext}>
                             下一题
