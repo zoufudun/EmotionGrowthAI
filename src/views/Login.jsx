@@ -50,7 +50,7 @@ const DEFAULT_CLASSES_BY_GROUP = {
   '高中组': Array.from({ length: 15 }, (_, i) => `高中(${i + 1})班`),
   '大学组': Array.from({ length: 15 }, (_, i) => `大学(${i + 1})班`)
 }
-import { UserOutlined, LockOutlined, RightOutlined, SmileOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons'
+import { UserOutlined, LockOutlined, RightOutlined, SmileOutlined, TeamOutlined, SettingOutlined, WechatOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../App.jsx'
 
@@ -93,6 +93,21 @@ export default function Login() {
     if (!selectedRegion || !selectedStage) return []
     const schools = REGION_SCHOOLS[selectedRegion]?.[selectedStage] || []
     return schools.map(s => ({ value: s }))
+  }
+
+  const handleMockWechatLogin = () => {
+    setLoading(true)
+    setTimeout(() => {
+      try {
+        login('student', '123')
+        message.success('微信扫码授权成功，欢迎进入心理空间！')
+        navigate('/student-dashboard')
+      } catch (e) {
+        message.error(e.message || '微信登录失败')
+      } finally {
+        setLoading(false)
+      }
+    }, 1200)
   }
 
   const onLoginFinish = (values) => {
@@ -291,6 +306,42 @@ export default function Login() {
                     </Button>
                   </Form.Item>
                 </Form>
+              )
+            },
+            {
+              key: 'wechat-login',
+              label: <span style={{ fontSize: 15 }}><WechatOutlined style={{ color: '#07c160' }} /> 微信扫码</span>,
+              children: (
+                <div style={{ textAlign: 'center', padding: '20px 0 10px 0' }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=07c160&bgcolor=111827&data=${encodeURIComponent(window.location.href + '?mock_wechat_login=true')}`}
+                    alt="微信扫码登录二维码"
+                    style={{
+                      width: 180,
+                      height: 180,
+                      margin: '0 auto 16px auto',
+                      display: 'block',
+                      borderRadius: 8,
+                      border: '2px solid #07c160',
+                      boxShadow: '0 0 15px rgba(7,193,96,0.3)'
+                    }}
+                  />
+                  <div style={{ color: '#fff', fontSize: 13, fontWeight: 'bold', marginBottom: 4 }}>微信安全扫码登录</div>
+                  <div style={{ color: 'var(--cyber-text-muted)', fontSize: 11, marginBottom: 20 }}>
+                    请使用微信 App 扫描二维码以快速授权登录本系统
+                  </div>
+                  
+                  <Button 
+                    type="primary" 
+                    className="cyber-btn"
+                    icon={<WechatOutlined />}
+                    loading={loading}
+                    onClick={handleMockWechatLogin}
+                    style={{ width: '100%', height: 40, background: '#07c160', borderColor: '#07c160', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    模拟扫码成功：一键微信快捷登录
+                  </Button>
+                </div>
               )
             },
             {
