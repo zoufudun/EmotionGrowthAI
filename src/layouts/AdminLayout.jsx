@@ -277,6 +277,8 @@ export default function AdminLayout() {
           top: 0,
           zIndex: 1000,
           transition: 'left 0.3s ease, width 0.3s ease',
+          overflowY: 'auto',
+          overflowX: 'hidden',
         }}
       >
         <div style={{ 
@@ -332,11 +334,7 @@ export default function AdminLayout() {
         />
 
         <div style={{
-          position: 'absolute',
-          bottom: 80,
-          left: 0,
-          width: '100%',
-          padding: '0 20px',
+          padding: '24px 20px 40px 20px',
           textAlign: 'center'
         }}>
           <div className="cyber-card" style={{ padding: '12px 8px', marginBottom: 0, fontSize: 11, background: 'rgba(6,11,25,0.5)' }}>
