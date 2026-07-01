@@ -145,7 +145,7 @@ export default function Login() {
           values.role === 'student' ? values.className : '',
           values.gender,
           values.role === 'student' ? values.school : '',
-          values.role === 'student' ? values.idCard : ''
+          ''
         )
         message.success('注册成功！已为您建立系统档案，请登录。')
         // Pre-fill login credentials and switch tab
@@ -173,17 +173,19 @@ export default function Login() {
 
   return (
     <div style={{
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       background: 'var(--cyber-bg)',
       position: 'relative',
-      overflow: 'hidden'
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      padding: '40px 20px'
     }}>
       {/* Sci-Fi Decorative Grid Circles */}
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         width: 600,
         height: 600,
         borderRadius: '50%',
@@ -194,7 +196,7 @@ export default function Login() {
         left: '-10%',
       }} />
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         width: 800,
         height: 800,
         borderRadius: '50%',
@@ -462,16 +464,7 @@ export default function Login() {
                         />
                       </Form.Item>
 
-                      <Form.Item
-                        name="idCard"
-                        label="身份证号"
-                        rules={[
-                          { required: true, message: '请输入身份证号' },
-                          { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '请输入合法的身份证号' }
-                        ]}
-                      >
-                        <Input placeholder="请输入18位身份证号" />
-                      </Form.Item>
+
 
                       <Form.Item
                         name="group"
