@@ -575,4 +575,14 @@ body::before {
     right: 8px !important;
     padding: 6px 12px !important;
   }
+  
+  /* 防止横屏下弹窗被截断，使其靠顶并支持内部纵向滚动 */
+  .ant-modal {
+    top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .ant-modal-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
 }

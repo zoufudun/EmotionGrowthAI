@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Form, Input, Button, Card, message, Tabs, Select, Radio, AutoComplete } from 'antd'
+import { Form, Input, Button, Card, message, Tabs, Select, Radio, AutoComplete, Row, Col } from 'antd'
 
 const REGION_SCHOOLS = {
   '北京': {
@@ -414,93 +414,101 @@ export default function Login() {
                   </Form.Item>
 
                   {registerRole === 'student' && (
-                    <>
-                      <Form.Item
-                        name="region"
-                        label="所属地区"
-                        rules={[{ required: true, message: '请选择所属省份/地区' }]}
-                      >
-                        <Select
-                          placeholder="选择省份/地区 (如：北京、上海)"
-                          onChange={(val) => {
-                            setSelectedRegion(val)
-                            registerForm.setFieldsValue({ school: undefined })
-                          }}
+                    <Row gutter={12}>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          name="region"
+                          label="所属地区"
+                          rules={[{ required: true, message: '请选择所属省份/地区' }]}
                         >
-                          {Object.keys(REGION_SCHOOLS).map(r => (
-                            <Option key={r} value={r}>{r}</Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
+                          <Select
+                            placeholder="选择省份/地区 (如：北京、上海)"
+                            onChange={(val) => {
+                              setSelectedRegion(val)
+                              registerForm.setFieldsValue({ school: undefined })
+                            }}
+                          >
+                            {Object.keys(REGION_SCHOOLS).map(r => (
+                              <Option key={r} value={r}>{r}</Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
 
-                      <Form.Item
-                        name="schoolStage"
-                        label="学校类型"
-                        rules={[{ required: true, message: '请选择学校类型' }]}
-                      >
-                        <Select
-                          placeholder="选择学校类型 (小学、初中、大学)"
-                          onChange={(val) => {
-                            setSelectedStage(val)
-                            registerForm.setFieldsValue({ school: undefined })
-                          }}
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          name="schoolStage"
+                          label="学校类型"
+                          rules={[{ required: true, message: '请选择学校类型' }]}
                         >
-                          <Option value="小学">小学 (Primary School)</Option>
-                          <Option value="初中">初中 (Junior High)</Option>
-                          <Option value="大学">大学 (University)</Option>
-                        </Select>
-                      </Form.Item>
+                          <Select
+                            placeholder="选择学校类型 (小学、初中、大学)"
+                            onChange={(val) => {
+                              setSelectedStage(val)
+                              registerForm.setFieldsValue({ school: undefined })
+                            }}
+                          >
+                            <Option value="小学">小学 (Primary School)</Option>
+                            <Option value="初中">初中 (Junior High)</Option>
+                            <Option value="大学">大学 (University)</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
 
-                      <Form.Item
-                        name="school"
-                        label="所属学校"
-                        rules={[{ required: true, message: '请选择或输入您的学校' }]}
-                      >
-                        <AutoComplete
-                          options={getSchoolOptions()}
-                          placeholder="请选择或输入具体学校"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                        />
-                      </Form.Item>
-
-
-
-                      <Form.Item
-                        name="group"
-                        label="学段组别"
-                        rules={[{ required: true, message: '请选择学段组别' }]}
-                      >
-                        <Select
-                          placeholder="请选择学段组别"
-                          onChange={(val) => {
-                            setSelectedGroup(val)
-                            registerForm.setFieldsValue({ className: undefined })
-                          }}
+                      <Col xs={24}>
+                        <Form.Item
+                          name="school"
+                          label="所属学校"
+                          rules={[{ required: true, message: '请选择或输入您的学校' }]}
                         >
-                          <Option value="小学组">小学组 (Elementary)</Option>
-                          <Option value="初中组">初中组 (Junior High)</Option>
-                          <Option value="高中组">高中组 (Senior High)</Option>
-                          <Option value="大学组">大学组 (University)</Option>
-                          <Option value="其他/自定义">其他/自定义</Option>
-                        </Select>
-                      </Form.Item>
+                          <AutoComplete
+                            options={getSchoolOptions()}
+                            placeholder="请选择或输入具体学校"
+                            filterOption={(inputValue, option) =>
+                              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                            }
+                          />
+                        </Form.Item>
+                      </Col>
 
-                      <Form.Item
-                        name="className"
-                        label="所属班级"
-                        rules={[{ required: true, message: '请选择或输入您的班级' }]}
-                      >
-                        <AutoComplete
-                          options={getClassOptions()}
-                          placeholder="选择或输入您的班级"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                        />
-                      </Form.Item>
-                    </>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          name="group"
+                          label="学段组别"
+                          rules={[{ required: true, message: '请选择学段组别' }]}
+                        >
+                          <Select
+                            placeholder="请选择学段组别"
+                            onChange={(val) => {
+                              setSelectedGroup(val)
+                              registerForm.setFieldsValue({ className: undefined })
+                            }}
+                          >
+                            <Option value="小学组">小学组 (Elementary)</Option>
+                            <Option value="初中组">初中组 (Junior High)</Option>
+                            <Option value="高中组">高中组 (Senior High)</Option>
+                            <Option value="大学组">大学组 (University)</Option>
+                            <Option value="其他/自定义">其他/自定义</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          name="className"
+                          label="所属班级"
+                          rules={[{ required: true, message: '请选择或输入您的班级' }]}
+                        >
+                          <AutoComplete
+                            options={getClassOptions()}
+                            placeholder="选择或输入您的班级"
+                            filterOption={(inputValue, option) =>
+                              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                            }
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                   )}
 
                   <Form.Item>
