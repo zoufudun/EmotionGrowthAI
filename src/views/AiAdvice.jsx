@@ -345,18 +345,18 @@ export default function AiAdvice() {
                 className: '高一1班',
                 taskName: '主动运动'
               }}
-              style={{ gap: '16px 12px', alignItems: 'flex-end' }}
+              style={{ gap: '16px 12px', alignItems: 'flex-end', display: 'flex', flexWrap: 'wrap' }}
             >
-              <Form.Item label="发布维度">
-                <Radio.Group value={targetType} onChange={(e) => setTargetType(e.target.value)}>
+              <Form.Item label="发布维度" style={{ margin: '4px 0', minWidth: 250, flex: '1 1 auto' }}>
+                <Radio.Group value={targetType} onChange={(e) => setTargetType(e.target.value)} style={{ width: '100%' }}>
                   <Radio.Button value="class" style={{ color: '#fff' }}>指定班级发布</Radio.Button>
                   <Radio.Button value="student" style={{ color: '#fff' }}>指定学生发布</Radio.Button>
                 </Radio.Group>
               </Form.Item>
 
               {targetType === 'class' ? (
-                <Form.Item name="className" label="目标班级" rules={[{ required: true }]}>
-                  <Select style={{ width: 150 }}>
+                <Form.Item name="className" label="目标班级" rules={[{ required: true }]} style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+                  <Select style={{ width: '100%' }}>
                     <Option value="高一1班">高一1班</Option>
                     <Option value="高一2班">高一2班</Option>
                     <Option value="高二1班">高二1班</Option>
@@ -364,8 +364,8 @@ export default function AiAdvice() {
                   </Select>
                 </Form.Item>
               ) : (
-                <Form.Item name="studentName" label="目标学生" rules={[{ required: true, message: '请选择学生' }]}>
-                  <Select style={{ width: 150 }} placeholder="选择指派学生" showSearch optionFilterProp="children">
+                <Form.Item name="studentName" label="目标学生" rules={[{ required: true, message: '请选择学生' }]} style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+                  <Select style={{ width: '100%' }} placeholder="选择指派学生" showSearch optionFilterProp="children">
                     {studentsList.map(s => (
                       <Option key={s.id} value={s.name}>{s.name} ({s.className})</Option>
                     ))}
@@ -373,8 +373,8 @@ export default function AiAdvice() {
                 </Form.Item>
               )}
 
-              <Form.Item name="taskName" label="任务目标类型" rules={[{ required: true }]}>
-                <Select style={{ width: 150 }} onChange={setSelectedTask}>
+              <Form.Item name="taskName" label="任务目标类型" rules={[{ required: true }]} style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+                <Select style={{ width: '100%' }} onChange={setSelectedTask}>
                   <Option value="认真听讲">认真听讲</Option>
                   <Option value="主动运动">主动运动</Option>
                   <Option value="帮助同学">帮助同学</Option>
@@ -387,17 +387,18 @@ export default function AiAdvice() {
               </Form.Item>
 
               {selectedTask === '自定义任务' && (
-                <Form.Item name="customTaskName" label="自定义任务内容" rules={[{ required: true, message: '请输入自定义任务名' }]}>
-                  <Input placeholder="例如：保持午休30分钟" style={{ width: 180 }} />
+                <Form.Item name="customTaskName" label="自定义任务内容" rules={[{ required: true, message: '请输入自定义任务名' }]} style={{ margin: '4px 0', minWidth: 180, flex: '1 1 auto' }}>
+                  <Input placeholder="例如：保持午休30分钟" style={{ width: '100%' }} />
                 </Form.Item>
               )}
 
-              <Form.Item>
+              <Form.Item style={{ margin: '4px 0' }}>
                 <Button
                   type="primary"
                   htmlType="submit"
                   className="cyber-btn"
                   icon={<PlusOutlined />}
+                  style={{ width: '100%' }}
                 >
                   发布成长任务
                 </Button>

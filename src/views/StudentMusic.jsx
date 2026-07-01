@@ -217,6 +217,34 @@ export default function StudentMusic() {
   // ECharts container
   const chartContainerRef = useRef(null)
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const timerControls = (
+    <Space style={{ flexWrap: 'wrap', gap: 6 }}>
+      <HourglassOutlined style={{ color: 'var(--cyber-secondary)' }} />
+      <span style={{ color: 'var(--cyber-text-muted)', fontSize: 12 }}>定时停止：</span>
+      <Radio.Group size="small" value={timerDuration} onChange={(e) => setTimerDuration(e.target.value)}>
+        <Radio.Button value={0}>循环</Radio.Button>
+        <Radio.Button value={5}>5分</Radio.Button>
+        <Radio.Button value={10}>10分</Radio.Button>
+        <Radio.Button value={15}>15分</Radio.Button>
+        <Radio.Button value={30}>30分</Radio.Button>
+      </Radio.Group>
+      {timerDuration > 0 && (
+        <Tag color="purple" style={{ marginLeft: 6 }}>
+          剩 {Math.floor(timerRemaining / 60)}分{timerRemaining % 60}秒
+        </Tag>
+      )}
+    </Space>
+  )
+
   // === Audio Trigger ===
   const handleTogglePlay = (track) => {
     if (playingTrack?.id === track.id) {
@@ -499,25 +527,21 @@ export default function StudentMusic() {
           <Card
             className="cyber-card"
             title={<span><CustomerServiceOutlined /> 心灵声学分类曲库</span>}
-            extra={
-              <Space>
-                <HourglassOutlined style={{ color: 'var(--cyber-secondary)' }} />
-                <span style={{ color: 'var(--cyber-text-muted)', fontSize: 12 }}>定时停止：</span>
-                <Radio.Group size="small" value={timerDuration} onChange={(e) => setTimerDuration(e.target.value)}>
-                  <Radio.Button value={0}>循环</Radio.Button>
-                  <Radio.Button value={5}>5分</Radio.Button>
-                  <Radio.Button value={10}>10分</Radio.Button>
-                  <Radio.Button value={15}>15分</Radio.Button>
-                  <Radio.Button value={30}>30分</Radio.Button>
-                </Radio.Group>
-                {timerDuration > 0 && (
-                  <Tag color="purple" style={{ marginLeft: 6 }}>
-                    剩 {Math.floor(timerRemaining / 60)}分{timerRemaining % 60}秒
-                  </Tag>
-                )}
-              </Space>
-            }
+            extra={!isMobile ? timerControls : null}
           >
+            {isMobile && (
+              <div style={{
+                marginBottom: 16,
+                padding: '8px 12px',
+                background: 'rgba(167, 139, 250, 0.05)',
+                border: '1px solid rgba(167, 139, 250, 0.15)',
+                borderRadius: 8,
+                display: 'flex',
+                justifyContent: 'center'
+              }}>
+                {timerControls}
+              </div>
+            )}
             {/* Playlists grouped by category */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
@@ -733,6 +757,7 @@ export default function StudentMusic() {
           <Card className="cyber-card" style={{ height: '100%' }} title={<span><HistoryOutlined /> 个人减压历程清单</span>}>
             <Table
               dataSource={relaxLogs}
+              scroll={{ x: 'max-content' }}
               columns={[
                 { title: '体验时间', dataIndex: 'time', key: 'time' },
                 { title: '所听曲目', dataIndex: 'track', key: 'track' },

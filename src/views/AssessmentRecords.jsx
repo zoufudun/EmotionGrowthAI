@@ -136,6 +136,7 @@ export default function AssessmentRecords() {
           dataSource={records}
           rowKey="id"
           pagination={{ pageSize: 5 }}
+          scroll={{ x: 'max-content' }}
         />
       </div>
 

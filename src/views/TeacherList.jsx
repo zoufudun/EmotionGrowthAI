@@ -161,6 +161,7 @@ export default function TeacherList() {
           dataSource={teachers}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 'max-content' }}
         />
       </div>
 

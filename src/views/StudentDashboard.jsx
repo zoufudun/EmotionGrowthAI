@@ -736,19 +736,19 @@ export default function StudentDashboard() {
                   <Col xs={24} lg={16}>
                     {/* Growth Stats Row */}
                     <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-                      <Col span={8}>
+                      <Col xs={24} sm={8}>
                         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 8, border: '1px solid rgba(0, 242, 254, 0.1)', textAlign: 'center' }}>
                           <div style={{ fontSize: 11, color: 'var(--cyber-text-muted)', marginBottom: 4 }}>累计积极打卡</div>
                           <div style={{ fontSize: 20, fontWeight: 'bold', color: 'var(--cyber-primary)' }}>{positiveDays} 天</div>
                         </div>
                       </Col>
-                      <Col span={8}>
+                      <Col xs={24} sm={8}>
                         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 8, border: '1px solid rgba(139, 92, 246, 0.1)', textAlign: 'center' }}>
                           <div style={{ fontSize: 11, color: 'var(--cyber-text-muted)', marginBottom: 4 }}>自我调节完成率</div>
                           <div style={{ fontSize: 20, fontWeight: 'bold', color: 'var(--cyber-secondary)' }}>{selfAdjustRate}%</div>
                         </div>
                       </Col>
-                      <Col span={8}>
+                      <Col xs={24} sm={8}>
                         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 8, border: '1px solid rgba(5, 243, 173, 0.1)', textAlign: 'center' }}>
                           <div style={{ fontSize: 11, color: 'var(--cyber-text-muted)', marginBottom: 4 }}>目标达成率</div>
                           <div style={{ fontSize: 20, fontWeight: 'bold', color: '#05f3ad' }}>{goalAchieveRate}%</div>
@@ -949,11 +949,11 @@ export default function StudentDashboard() {
 
                           {/* Step 2.5: Sleep & Study Stress */}
                           <Row gutter={16} style={{ marginBottom: 20 }}>
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                               <div style={{ fontSize: 12, color: 'var(--cyber-text-muted)', marginBottom: 6 }}>睡眠质量评估：</div>
                               <Rate value={sleepQuality} onChange={setSleepQuality} style={{ fontSize: 18 }} />
                             </Col>
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                               <div style={{ fontSize: 12, color: 'var(--cyber-text-muted)', marginBottom: 4 }}>今日学习压力评估（{studyStress}级）：</div>
                               <Slider min={1} max={10} value={studyStress} onChange={setStudyStress} />
                             </Col>

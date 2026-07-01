@@ -472,6 +472,7 @@ export default function AdminPanel() {
                     dataSource={classesData}
                     pagination={false}
                     rowKey="className"
+                    scroll={{ x: 'max-content' }}
                   />
                 </div>
               )
@@ -494,6 +495,7 @@ export default function AdminPanel() {
                     dataSource={users}
                     rowKey="id"
                     pagination={{ pageSize: 8 }}
+                    scroll={{ x: 'max-content' }}
                   />
                 </div>
               )
@@ -626,6 +628,7 @@ export default function AdminPanel() {
                     dataSource={filteredLogs}
                     rowKey="id"
                     pagination={{ pageSize: 8 }}
+                    scroll={{ x: 'max-content' }}
                   />
                 </div>
               )

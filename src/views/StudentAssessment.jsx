@@ -428,6 +428,7 @@ export default function StudentAssessment() {
             size="small"
             pagination={{ pageSize: 5 }}
             locale={{ emptyText: '暂无历史自测记录' }}
+            scroll={{ x: 'max-content' }}
           />
         </Card>
       </div>

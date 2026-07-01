@@ -350,6 +350,7 @@ export default function ClassStatistics() {
           dataSource={calculatedData}
           pagination={{ pageSize: 5 }}
           rowKey="key"
+          scroll={{ x: 'max-content' }}
         />
       </div>
 

@@ -181,7 +181,7 @@ export default function Login() {
       position: 'relative',
       overflowX: 'hidden',
       overflowY: 'auto',
-      padding: '40px 20px'
+      padding: '20px 12px'
     }}>
       {/* Sci-Fi Decorative Grid Circles */}
       <div style={{
@@ -211,7 +211,8 @@ export default function Login() {
       <Card
         className="cyber-card cyber-alert-pulse"
         style={{
-          width: 460,
+          width: '100%',
+          maxWidth: 460,
           background: 'rgba(10, 20, 45, 0.82)',
           boxShadow: '0 0 35px rgba(0, 242, 254, 0.15)',
           zIndex: 10,

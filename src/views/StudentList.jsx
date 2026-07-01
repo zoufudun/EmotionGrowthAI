@@ -307,14 +307,14 @@ export default function StudentList() {
           form={form}
           layout="inline"
           onFinish={handleSearch}
-          style={{ gap: '16px 8px' }}
+          style={{ gap: '16px 8px', display: 'flex', flexWrap: 'wrap' }}
         >
-          <Form.Item name="name" label="姓名">
-            <Input placeholder="请输入学生姓名" style={{ width: 180 }} />
+          <Form.Item name="name" label="姓名" style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+            <Input placeholder="请输入学生姓名" style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="className" label="班级">
-            <Select placeholder="请选择班级" style={{ width: 180 }} allowClear>
+          <Form.Item name="className" label="班级" style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+            <Select placeholder="请选择班级" style={{ width: '100%' }} allowClear>
               <Option value="高一1班">高一1班</Option>
               <Option value="高一2班">高一2班</Option>
               <Option value="高二1班">高二1班</Option>
@@ -322,8 +322,8 @@ export default function StudentList() {
             </Select>
           </Form.Item>
 
-          <Form.Item name="risk" label="风险等级">
-            <Select placeholder="选择级别" style={{ width: 180 }} allowClear>
+          <Form.Item name="risk" label="风险等级" style={{ margin: '4px 0', minWidth: 150, flex: '1 1 auto' }}>
+            <Select placeholder="选择级别" style={{ width: '100%' }} allowClear>
               <Option value="正常">正常</Option>
               <Option value="轻度关注">轻度关注</Option>
               <Option value="中度关注">中度关注</Option>
@@ -331,7 +331,7 @@ export default function StudentList() {
             </Select>
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item style={{ margin: '4px 0' }}>
             <Space>
               <Button type="primary" htmlType="submit" className="cyber-btn" icon={<SearchOutlined />}>
                 查询
@@ -351,6 +351,7 @@ export default function StudentList() {
           dataSource={students}
           rowKey="id"
           pagination={{ pageSize: 5 }}
+          scroll={{ x: 'max-content' }}
         />
       </div>
 

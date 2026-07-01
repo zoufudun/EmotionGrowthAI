@@ -15,7 +15,9 @@ import {
   HeartOutlined,
   TrophyOutlined,
   CustomerServiceOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  MenuOutlined,
+  CloseOutlined
 } from '@ant-design/icons'
 import { UserContext } from '../App.jsx'
 
@@ -26,13 +28,40 @@ export default function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [timeStr, setTimeStr] = useState('')
+  const [collapsed, setCollapsed] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Responsive layout listener
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 992
+      setIsMobile(mobile)
+      if (mobile) {
+        setCollapsed(true)
+      } else {
+        setCollapsed(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Auto-close drawer Sider on route change for mobile
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true)
+    }
+  }, [location.pathname, isMobile])
 
   // Digital clock update
   useEffect(() => {
     const updateTime = () => {
       const d = new Date()
       const pad = (n) => String(n).padStart(2, '0')
-      setTimeStr(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`)
+      const timePart = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+      const datePart = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`
+      setTimeStr(window.innerWidth < 576 ? timePart : `${datePart} ${timePart}`)
     }
     updateTime()
     const timer = setInterval(updateTime, 1000)
@@ -214,18 +243,40 @@ export default function AdminLayout() {
   ]
 
   return (
-    <Layout style={{ minHeight: '100vh', background: 'var(--cyber-bg)' }}>
+    <Layout style={{ minHeight: '100vh', background: 'var(--cyber-bg)', overflow: 'hidden' }}>
+      {/* Mobile Drawer Backdrop Mask */}
+      {isMobile && !collapsed && (
+        <div 
+          onClick={() => setCollapsed(true)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(3px)',
+            zIndex: 999,
+            transition: 'opacity 0.3s ease',
+          }}
+        />
+      )}
+
       {/* Sider Panel */}
       <Sider
         width={240}
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
         style={{
-          background: 'rgba(10, 20, 45, 0.9)',
+          background: 'rgba(10, 20, 45, 0.95)',
           borderRight: '1px solid var(--cyber-border)',
           position: 'fixed',
           height: '100vh',
-          left: 0,
+          left: isMobile ? (collapsed ? -240 : 0) : 0,
           top: 0,
-          zIndex: 100,
+          zIndex: 1000,
+          transition: 'left 0.3s ease, width 0.3s ease',
         }}
       >
         <div style={{ 
@@ -296,7 +347,12 @@ export default function AdminLayout() {
       </Sider>
 
       {/* Main Layout Area */}
-      <Layout style={{ marginLeft: 240, background: 'transparent' }}>
+      <Layout style={{ 
+        marginLeft: isMobile ? 0 : 240, 
+        transition: 'margin-left 0.3s ease', 
+        background: 'transparent',
+        minWidth: 0
+      }}>
         {/* Header Console */}
         <Header style={{ 
           background: 'rgba(10, 20, 45, 0.85)', 
@@ -305,26 +361,44 @@ export default function AdminLayout() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
-          padding: '0 24px',
+          padding: isMobile ? '0 12px' : '0 24px',
           height: 64,
           position: 'sticky',
           top: 0,
           zIndex: 99
         }}>
-          <div style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ color: 'var(--cyber-primary)', fontSize: 14 }}>[CONSOLE]</span>
+          <div style={{ fontSize: isMobile ? 14 : 18, fontWeight: 'bold', color: '#fff', display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 12 }}>
+            {isMobile && (
+              <Button
+                type="text"
+                icon={collapsed ? <MenuOutlined style={{ color: 'var(--cyber-primary)' }} /> : <CloseOutlined style={{ color: 'var(--cyber-primary)' }} />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  marginRight: 4,
+                  fontSize: '16px',
+                  width: 36,
+                  height: 36,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid var(--cyber-border)',
+                  background: 'rgba(13, 22, 50, 0.8)'
+                }}
+              />
+            )}
+            <span style={{ color: 'var(--cyber-primary)', fontSize: isMobile ? 11 : 14 }}>[CONSOLE]</span>
             <span className="cyber-glitch-text">{getPageTitle()}</span>
           </div>
 
-          <Space size={20}>
+          <Space size={isMobile ? 8 : 20}>
             {/* Realtime Digital Clock */}
             <div style={{ 
               color: 'var(--cyber-primary)', 
               fontFamily: 'var(--font-family-tech)', 
-              fontSize: 13,
+              fontSize: isMobile ? 11 : 13,
               display: 'flex',
               alignItems: 'center',
-              gap: 6
+              gap: 4
             }}>
               <ClockCircleOutlined />
               <span>{timeStr}</span>
@@ -334,13 +408,14 @@ export default function AdminLayout() {
             <Dropdown menu={{ items: userDropdownItems }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>
                 <Avatar 
+                  size={isMobile ? 'small' : 'default'}
                   style={{ 
                     backgroundColor: userInfo?.role === 'student' ? 'var(--cyber-secondary)' : userInfo?.role === 'teacher' ? 'var(--cyber-primary)' : 'var(--cyber-success)',
                     boxShadow: `0 0 10px ${userInfo?.role === 'student' ? 'rgba(167, 139, 250, 0.5)' : userInfo?.role === 'teacher' ? 'rgba(0, 242, 254, 0.5)' : 'rgba(5, 243, 173, 0.5)'}`
                   }}
                   icon={<UserOutlined />} 
                 />
-                <span style={{ color: '#fff', fontSize: 13 }}>{userInfo?.nickname || '未登录'}</span>
+                {!isMobile && <span style={{ color: '#fff', fontSize: 13 }}>{userInfo?.nickname || '未登录'}</span>}
               </Space>
             </Dropdown>
           </Space>
