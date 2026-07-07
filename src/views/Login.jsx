@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { Form, Input, Button, Card, message, Tabs, Select, Radio, AutoComplete, Row, Col } from 'antd'
+import React, { useState, useContext, useEffect, useRef } from 'react'
+import { Form, Input, Button, Card, message, Tabs, Select, Radio, AutoComplete, Row, Col, Modal } from 'antd'
 
 const REGION_SCHOOLS = {
   '北京': {
@@ -50,14 +50,14 @@ const DEFAULT_CLASSES_BY_GROUP = {
   '高中组': Array.from({ length: 15 }, (_, i) => `高中(${i + 1})班`),
   '大学组': Array.from({ length: 15 }, (_, i) => `大学(${i + 1})班`)
 }
-import { UserOutlined, LockOutlined, RightOutlined, SmileOutlined, TeamOutlined, SettingOutlined, WechatOutlined } from '@ant-design/icons'
+import { UserOutlined, LockOutlined, RightOutlined, SmileOutlined, TeamOutlined, SettingOutlined, WechatOutlined, DownloadOutlined, UploadOutlined, SafetyCertificateOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../App.jsx'
 
 const { Option } = Select
 
 export default function Login() {
-  const { login, register, users } = useContext(UserContext)
+  const { login, register, users, setUsers } = useContext(UserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('login')
@@ -69,6 +69,115 @@ export default function Login() {
 
   const [loginForm] = Form.useForm()
   const [registerForm] = Form.useForm()
+  const [recoveryForm] = Form.useForm()
+  const [resetPwdForm] = Form.useForm()
+
+  // Account Recovery States
+  const [recoveryModalVisible, setRecoveryModalVisible] = useState(false)
+  const [recoveredUser, setRecoveredUser] = useState(null)
+  const fileInputRef = useRef(null)
+
+  // Account Recovery Matcher
+  const handleRecoverAccount = (values) => {
+    const matched = users.find(u => 
+      u.username === values.username.trim() && 
+      u.nickname === values.nickname.trim() && 
+      u.role === values.role
+    )
+    
+    if (!matched) {
+      message.error('未找到匹配的账户，请核对用户名、姓名和角色是否正确')
+      return
+    }
+
+    if (values.role === 'student' && values.school && matched.school !== values.school) {
+      message.error('学校信息不匹配')
+      return
+    }
+
+    setRecoveredUser(matched)
+    message.success('账户身份验证成功！')
+  }
+
+  // Password Reset
+  const handleResetPassword = (values) => {
+    const newPassword = values.newPassword
+    if (!newPassword || !newPassword.trim()) {
+      message.warning('新密码不能为空')
+      return
+    }
+
+    const updatedUsers = users.map(u => 
+      u.id === recoveredUser.id ? { ...u, password: newPassword.trim() } : u
+    )
+    
+    setUsers(updatedUsers)
+    localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers))
+    localStorage.setItem('registeredUsers_backup', JSON.stringify(updatedUsers))
+
+    message.success('密码重置成功！请使用新密码登录')
+    setRecoveryModalVisible(false)
+    setRecoveredUser(null)
+    recoveryForm.resetFields()
+    resetPwdForm.resetFields()
+  }
+
+  // Export Users Backup to File
+  const handleExportBackup = () => {
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(users, null, 2))
+      const downloadAnchor = document.createElement('a')
+      downloadAnchor.setAttribute("href", dataStr)
+      downloadAnchor.setAttribute("download", `emotion_growth_users_backup_${Date.now()}.json`)
+      document.body.appendChild(downloadAnchor)
+      downloadAnchor.click()
+      downloadAnchor.remove()
+      message.success('用户数据备份导出成功！已保存为本地 JSON 文件')
+    } catch (e) {
+      message.error('导出备份失败：' + e.message)
+    }
+  }
+
+  // Import Users Backup from File
+  const handleImportBackup = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const importedList = JSON.parse(event.target.result)
+        if (!Array.isArray(importedList)) {
+          throw new Error('无效的备份文件格式')
+        }
+
+        const valid = importedList.every(u => u.username && u.password && u.nickname && u.role)
+        if (!valid) {
+          throw new Error('备份文件中的部分用户信息字段缺失')
+        }
+
+        const currentUsers = [...users]
+        let addCount = 0
+        importedList.forEach(imp => {
+          const exists = currentUsers.some(u => u.username === imp.username)
+          if (!exists) {
+            currentUsers.push(imp)
+            addCount++
+          }
+        })
+
+        setUsers(currentUsers)
+        localStorage.setItem('registeredUsers', JSON.stringify(currentUsers))
+        localStorage.setItem('registeredUsers_backup', JSON.stringify(currentUsers))
+
+        message.success(`成功恢复并合并了 ${addCount} 个账户信息！`)
+      } catch (err) {
+        message.error('导入备份失败：' + err.message)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   useEffect(() => {
     try {
@@ -289,6 +398,15 @@ export default function Login() {
                       size="large"
                     />
                   </Form.Item>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                    <a 
+                      onClick={() => setRecoveryModalVisible(true)} 
+                      style={{ color: 'var(--cyber-primary)', fontSize: 12, cursor: 'pointer', textShadow: '0 0 5px rgba(0, 242, 254, 0.3)' }}
+                    >
+                      忘记密码 / 找回与恢复账户？
+                    </a>
+                  </div>
 
                   <Form.Item>
                     <Button
@@ -583,6 +701,208 @@ export default function Login() {
           to { transform: rotate(360deg); }
         }
       `}</style>
+
+      {/* Account Recovery & Backup Modal */}
+      <Modal
+        title={
+          <span style={{ color: '#fff', fontSize: 16 }}>
+            <SafetyCertificateOutlined style={{ color: 'var(--cyber-primary)', marginRight: 8 }} />
+            账户找回与数据安全中心
+          </span>
+        }
+        open={recoveryModalVisible}
+        onCancel={() => {
+          setRecoveryModalVisible(false)
+          setRecoveredUser(null)
+          recoveryForm.resetFields()
+          resetPwdForm.resetFields()
+        }}
+        footer={null}
+        width={500}
+        bodyStyle={{ padding: '12px 0 0 0' }}
+      >
+        <div style={{ color: 'var(--cyber-text-muted)', fontSize: 12, marginBottom: 16 }}>
+          💡 如果您忘记了访问秘钥或由于系统更新/浏览器缓存清理导致账号丢失，可以通过此中心直接找回或使用备份文件恢复。
+        </div>
+
+        <Tabs
+          defaultActiveKey="find"
+          items={[
+            {
+              key: 'find',
+              label: '🔎 身份验证找回',
+              children: (
+                <div style={{ padding: '10px 0' }}>
+                  {!recoveredUser ? (
+                    <Form
+                      form={recoveryForm}
+                      layout="vertical"
+                      onFinish={handleRecoverAccount}
+                    >
+                      <Form.Item
+                        name="role"
+                        label="您的身份角色"
+                        rules={[{ required: true, message: '请选择角色' }]}
+                        initialValue="student"
+                      >
+                        <Radio.Group>
+                          <Radio value="student" style={{ color: '#fff' }}>学生</Radio>
+                          <Radio value="teacher" style={{ color: '#fff' }}>教师</Radio>
+                          <Radio value="admin" style={{ color: '#fff' }}>系统主管</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+
+                      <Form.Item
+                        name="username"
+                        label="注册账户名"
+                        rules={[{ required: true, message: '请输入您注册时的登录用户名' }]}
+                      >
+                        <Input placeholder="输入登录用户名" />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="nickname"
+                        label="真实姓名 / 昵称"
+                        rules={[{ required: true, message: '请输入您注册时的姓名/昵称' }]}
+                      >
+                        <Input placeholder="输入姓名/昵称" />
+                      </Form.Item>
+
+                      <Form.Item
+                        noStyle
+                        shouldUpdate={(prevValues, currentValues) => prevValues.role !== currentValues.role}
+                      >
+                        {({ getFieldValue }) =>
+                          getFieldValue('role') === 'student' ? (
+                            <Form.Item
+                              name="school"
+                              label="所属学校"
+                              rules={[{ required: true, message: '学生用户必须核对所属学校' }]}
+                            >
+                              <Input placeholder="输入注册时的完整学校名称" />
+                            </Form.Item>
+                          ) : null
+                        }
+                      </Form.Item>
+
+                      <Form.Item style={{ marginTop: 12 }}>
+                        <Button type="primary" htmlType="submit" block className="cyber-btn">
+                          验证身份并找回
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ) : (
+                    <div style={{ background: 'rgba(255,255,255,0.02)', padding: 16, borderRadius: 6, border: '1px solid rgba(0, 242, 254, 0.15)' }}>
+                      <div style={{ color: 'var(--cyber-success)', fontWeight: 'bold', marginBottom: 12 }}>
+                        ✓ 身份验证成功！您的账户信息如下：
+                      </div>
+                      <div style={{ color: '#fff', fontSize: 13, marginBottom: 8 }}>
+                        <b>账号名：</b> {recoveredUser.username}
+                      </div>
+                      <div style={{ color: '#fff', fontSize: 13, marginBottom: 8 }}>
+                        <b>姓名/昵称：</b> {recoveredUser.nickname}
+                      </div>
+                      <div style={{ color: '#fff', fontSize: 13, marginBottom: 16 }}>
+                        <b>当前密码：</b> <span style={{ color: 'var(--cyber-primary)', fontWeight: 'bold' }}>{recoveredUser.password}</span>
+                      </div>
+
+                      <Divider style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '12px 0' }} />
+
+                      <Form
+                        form={resetPwdForm}
+                        layout="vertical"
+                        onFinish={handleResetPassword}
+                      >
+                        <Form.Item
+                          name="newPassword"
+                          label="直接重置密码"
+                          rules={[{ required: true, message: '密码不能为空' }, { min: 3, message: '密码至少3位' }]}
+                        >
+                          <Input.Password placeholder="输入新密码" />
+                        </Form.Item>
+
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <Button style={{ flex: 1 }} onClick={() => setRecoveredUser(null)}>
+                            重新验证
+                          </Button>
+                          <Button type="primary" htmlType="submit" style={{ flex: 1 }} className="cyber-btn">
+                            确认修改密码
+                          </Button>
+                        </div>
+                      </Form>
+                    </div>
+                  )}
+                </div>
+              )
+            },
+            {
+              key: 'backup',
+              label: '💾 备份与导入恢复',
+              children: (
+                <div style={{ padding: '10px 0', textAlign: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
+                    <div style={{
+                      background: 'rgba(0, 242, 254, 0.05)',
+                      border: '1px solid rgba(0, 242, 254, 0.1)',
+                      borderRadius: 6,
+                      padding: 12,
+                      width: '100%',
+                      textAlign: 'left'
+                    }}>
+                      <div style={{ color: '#fff', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>
+                        1. 导出本站所有注册用户备份
+                      </div>
+                      <div style={{ color: 'var(--cyber-text-muted)', fontSize: 11, marginBottom: 8 }}>
+                        将当前系统内的所有注册账户及密码信息导出为一个本地 JSON 备份文件。
+                      </div>
+                      <Button 
+                        type="primary" 
+                        icon={<DownloadOutlined />} 
+                        onClick={handleExportBackup}
+                        style={{ borderColor: 'var(--cyber-primary)', color: 'var(--cyber-primary)', background: 'transparent' }}
+                      >
+                        立即导出备份文件
+                      </Button>
+                    </div>
+
+                    <div style={{
+                      background: 'rgba(167, 139, 250, 0.05)',
+                      border: '1px solid rgba(167, 139, 250, 0.1)',
+                      borderRadius: 6,
+                      padding: 12,
+                      width: '100%',
+                      textAlign: 'left'
+                    }}>
+                      <div style={{ color: '#fff', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>
+                        2. 从备份文件恢复账户数据
+                      </div>
+                      <div style={{ color: 'var(--cyber-text-muted)', fontSize: 11, marginBottom: 8 }}>
+                        上传之前导出的 JSON 备份文件，合并未重复的账号信息到当前浏览器中。
+                      </div>
+                      <input 
+                        type="file" 
+                        accept=".json" 
+                        ref={fileInputRef} 
+                        onChange={handleImportBackup} 
+                        style={{ display: 'none' }} 
+                      />
+                      <Button 
+                        type="primary" 
+                        icon={<UploadOutlined />} 
+                        onClick={() => fileInputRef.current.click()}
+                        style={{ borderColor: 'var(--cyber-secondary)', color: 'var(--cyber-secondary)', background: 'transparent' }}
+                      >
+                        上传并恢复备份
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+          ]}
+        />
+      </Modal>
     </div>
   )
 }
+

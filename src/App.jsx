@@ -24,26 +24,54 @@ import AdminLayout from './layouts/AdminLayout.jsx'
 export const UserContext = createContext(null)
 
 export const UserProvider = ({ children }) => {
-  // === 1. Local Storage User Seeding ===
+  // === 1. Local Storage User Seeding (Reliable Merge & Backup System) ===
   const [users, setUsers] = useState(() => {
+    let savedList = []
     try {
-      const saved = localStorage.getItem('registeredUsers')
-      if (saved) return JSON.parse(saved)
-    } catch {}
-    
-    // Default seed accounts
+      const saved = localStorage.getItem('registeredUsers') || localStorage.getItem('registeredUsers_backup')
+      if (saved) {
+        savedList = JSON.parse(saved)
+      }
+    } catch (e) {
+      console.error("Error reading registered users", e)
+    }
+
     const seedUsers = [
       { id: '1', username: 'student', password: '123', nickname: '默认学生', role: 'student', className: '高一1班', gender: '男', school: '朝阳区第一实验小学', idCard: '110101201001011234', avatar: '😊', bio: '好好学习，天天向上！' },
       { id: '2', username: 'teacher', password: '123', nickname: '陈老师', role: 'teacher', gender: '女', avatar: '👩‍🏫', bio: '心理成长守护者。' },
       { id: '3', username: 'admin', password: '123', nickname: '系统管理员', role: 'admin', gender: '男', avatar: '⚙️', bio: '系统核心管理端口。' }
     ]
-    localStorage.setItem('registeredUsers', JSON.stringify(seedUsers))
-    return seedUsers
+
+    if (savedList.length === 0) {
+      localStorage.setItem('registeredUsers', JSON.stringify(seedUsers))
+      localStorage.setItem('registeredUsers_backup', JSON.stringify(seedUsers))
+      return seedUsers
+    }
+
+    // Merge savedList with seedUsers to make sure default seed users are updated
+    // while keeping all other registered users intact.
+    const merged = [...savedList]
+    seedUsers.forEach(seed => {
+      const index = merged.findIndex(u => u.username === seed.username)
+      if (index === -1) {
+        merged.push(seed)
+      } else {
+        // Update seed user fields but preserve passwords/nicknames if modified
+        merged[index] = { ...seed, ...merged[index] }
+      }
+    })
+
+    localStorage.setItem('registeredUsers', JSON.stringify(merged))
+    localStorage.setItem('registeredUsers_backup', JSON.stringify(merged))
+    return merged
   })
 
-  // Sync users list to local storage
+  // Sync users list to local storage and its backup
   useEffect(() => {
     localStorage.setItem('registeredUsers', JSON.stringify(users))
+    if (users && users.length > 0) {
+      localStorage.setItem('registeredUsers_backup', JSON.stringify(users))
+    }
   }, [users])
 
   // Current session auth states
