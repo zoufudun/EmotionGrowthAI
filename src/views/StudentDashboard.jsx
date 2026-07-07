@@ -85,53 +85,63 @@ export default function StudentDashboard() {
 
   const predefinedGoals = ['认真听讲', '主动运动', '帮助同学', '整理书桌', '整理错题', '复习总结', '学习新知识']
 
-  // === 2. Check-in History States ===
+  // === 2. Check-in History States (per-user isolated) ===
+  const moodHistoryKey = 'moodCheckInHistory_' + (userInfo.id || 'default')
+
+  const getDefaultMoodHistory = () => {
+    // Only seed default data for the built-in student account (id='1')
+    if (userInfo.id === '1') {
+      return [
+        {
+          id: 'mock-1',
+          time: '2026-06-24 18:30',
+          mood: '愉快',
+          emoji: '😊',
+          color: '#00f2fe',
+          intensity: 6,
+          trigger: ['人际关系'],
+          sleep: 4,
+          stress: 4,
+          diary: '今天在数学课上回答出了老师提问的一道思考题，得到了全班同学掌声，感觉非常开心！',
+          goals: ['认真听讲', '整理错题'],
+          aiFeedback: '看到你今天状态满满，感到格外优秀！你提到上课解出思考题并获得掌声，这不仅代表你的解题能力，更是专注听讲的体现。数学学习需要这种突破难题的成就感，非常棒！明天继续保持【认真听讲】和【整理错题】的目标，把今天的思考方式总结进错题本，一定会有更大突破。加油！',
+          tags: ['情绪记录', '正向成长']
+        },
+        {
+          id: 'mock-2',
+          time: '2026-06-25 08:15',
+          mood: '疲惫',
+          emoji: '🥱',
+          color: '#ffb800',
+          intensity: 7,
+          trigger: ['学业压力', '时间管理'],
+          sleep: 2,
+          stress: 8,
+          diary: '最近临近期末考试，功课比较繁重，晚上睡眠也有点不足，感觉白天很没精神。',
+          goals: ['主动运动', '复习总结'],
+          aiFeedback: '学业功课繁重时，感到【疲惫】是身体在提醒你需要进行适当的休息与修整。建议你今晚早点睡，明天小目标里的【主动运动】非常重要，跑跑步或做做拉伸能有效激活你的身体能量，舒缓压力。学习就像是一场马拉松，阶段性的调整比一味拼命更有远见。',
+          tags: ['情绪记录', '高压感知']
+        }
+      ]
+    }
+    return []
+  }
+
   const [checkInHistory, setCheckInHistory] = useState(() => {
     try {
-      const saved = localStorage.getItem('moodCheckInHistory')
+      const saved = localStorage.getItem(moodHistoryKey)
       if (saved) {
         return JSON.parse(saved)
       }
     } catch (e) {
       console.error(e)
     }
-    return [
-      {
-        id: 'mock-1',
-        time: '2026-06-24 18:30',
-        mood: '愉快',
-        emoji: '😊',
-        color: '#00f2fe',
-        intensity: 6,
-        trigger: ['人际关系'],
-        sleep: 4,
-        stress: 4,
-        diary: '今天在数学课上回答出了老师提问的一道思考题，得到了全班同学掌声，感觉非常开心！',
-        goals: ['认真听讲', '整理错题'],
-        aiFeedback: '看到你今天状态满满，感到格外优秀！你提到上课解出思考题并获得掌声，这不仅代表你的解题能力，更是专注听讲的体现。数学学习需要这种突破难题的成就感，非常棒！明天继续保持【认真听讲】和【整理错题】的目标，把今天的思考方式总结进错题本，一定会有更大突破。加油！',
-        tags: ['情绪记录', '正向成长']
-      },
-      {
-        id: 'mock-2',
-        time: '2026-06-25 08:15',
-        mood: '疲惫',
-        emoji: '🥱',
-        color: '#ffb800',
-        intensity: 7,
-        trigger: ['学业压力', '时间管理'],
-        sleep: 2,
-        stress: 8,
-        diary: '最近临近期末考试，功课比较繁重，晚上睡眠也有点不足，感觉白天很没精神。',
-        goals: ['主动运动', '复习总结'],
-        aiFeedback: '学业功课繁重时，感到【疲惫】是身体在提醒你需要进行适当的休息与修整。建议你今晚早点睡，明天小目标里的【主动运动】非常重要，跑跑步或做做拉伸能有效激活你的身体能量，舒缓压力。学习就像是一场马拉松，阶段性的调整比一味拼命更有远见。',
-        tags: ['情绪记录', '高压感知']
-      }
-    ]
+    return getDefaultMoodHistory()
   })
 
   useEffect(() => {
-    localStorage.setItem('moodCheckInHistory', JSON.stringify(checkInHistory))
-  }, [checkInHistory])
+    localStorage.setItem(moodHistoryKey, JSON.stringify(checkInHistory))
+  }, [checkInHistory, moodHistoryKey])
 
   // Load diary draft on mount
   useEffect(() => {
@@ -267,7 +277,7 @@ export default function StudentDashboard() {
 
   const checkBreathingBadge = () => {
     try {
-      const saved = localStorage.getItem('reflectiveLogs')
+      const saved = localStorage.getItem('reflectiveLogs_' + (userInfo.id || 'default'))
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed.length > 0) return true
@@ -693,12 +703,27 @@ export default function StudentDashboard() {
 
       myChart.setOption(option)
 
+      // Fix: Use ResizeObserver for precise container resize detection
+      // This ensures chart resizes correctly when switching Tabs
+      const resizeObserver = new ResizeObserver(() => {
+        myChart.resize()
+      })
+      resizeObserver.observe(chartDom)
+
+      // Fix: Delayed resize to handle Tab switch animation completing
+      const resizeTimer = setTimeout(() => {
+        myChart.resize()
+      }, 150)
+
+      // Also listen to window resize as a fallback
       const handleResize = () => {
         myChart.resize()
       }
       window.addEventListener('resize', handleResize)
 
       return () => {
+        clearTimeout(resizeTimer)
+        resizeObserver.disconnect()
         window.removeEventListener('resize', handleResize)
         myChart.dispose()
       }

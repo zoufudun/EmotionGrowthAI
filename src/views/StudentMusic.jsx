@@ -392,7 +392,7 @@ export default function StudentMusic() {
   // Smart suggestions from latest check-in
   const getSmartMusicMatch = () => {
     try {
-      const savedDiary = localStorage.getItem('moodCheckInHistory')
+      const savedDiary = localStorage.getItem('moodCheckInHistory_' + (userInfo?.id || 'default'))
       if (savedDiary) {
         const history = JSON.parse(savedDiary)
         if (history.length > 0) {

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Layout, Menu, Button, Space, Avatar, Dropdown, message } from 'antd'
+import React, { useContext, useEffect, useState, useRef } from 'react'
+import { Layout, Menu, Button, Space, Avatar, Dropdown, message, Tour } from 'antd'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   DashboardOutlined,
@@ -30,6 +30,15 @@ export default function AdminLayout() {
   const [timeStr, setTimeStr] = useState('')
   const [collapsed, setCollapsed] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+
+  // === Onboarding Tour ===
+  const [tourOpen, setTourOpen] = useState(false)
+  const tourRef1 = useRef(null)
+  const tourRef2 = useRef(null)
+  const tourRef3 = useRef(null)
+  const tourRef4 = useRef(null)
+  const tourRef5 = useRef(null)
+  const tourRef6 = useRef(null)
 
   // Responsive layout listener
   useEffect(() => {
@@ -90,6 +99,20 @@ export default function AdminLayout() {
     }
   }, [userInfo, location.pathname, navigate])
 
+  // Auto-trigger onboarding Tour for new student users
+  useEffect(() => {
+    if (userInfo?.role === 'student' && userInfo?.id) {
+      const done = localStorage.getItem('onboardingDone_' + userInfo.id)
+      if (!done) {
+        // Small delay to ensure sidebar menu is rendered
+        const timer = setTimeout(() => {
+          setTourOpen(true)
+        }, 800)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [userInfo])
+
   const handleLogout = () => {
     logout()
     message.success('已退出登录')
@@ -104,32 +127,32 @@ export default function AdminLayout() {
     {
       key: '/student-dashboard',
       icon: <SlidersOutlined />,
-      label: <Link to="/student-dashboard">心理成长空间</Link>,
+      label: <span ref={tourRef1}><Link to="/student-dashboard">心理成长空间</Link></span>,
     },
     {
       key: '/student-assessment',
       icon: <FileTextOutlined />,
-      label: <Link to="/student-assessment">心理测评中心</Link>,
+      label: <span ref={tourRef2}><Link to="/student-assessment">心理测评中心</Link></span>,
     },
     {
       key: '/student-counseling',
       icon: <HeartOutlined />,
-      label: <Link to="/student-counseling">情绪疏导中心</Link>,
+      label: <span ref={tourRef3}><Link to="/student-counseling">情绪疏导中心</Link></span>,
     },
     {
       key: '/student-goals',
       icon: <TrophyOutlined />,
-      label: <Link to="/student-goals">自我反馈与目标</Link>,
+      label: <span ref={tourRef4}><Link to="/student-goals">自我反馈与目标</Link></span>,
     },
     {
       key: '/student-music',
       icon: <CustomerServiceOutlined />,
-      label: <Link to="/student-music">心灵音乐屋</Link>,
+      label: <span ref={tourRef5}><Link to="/student-music">心灵音乐屋</Link></span>,
     },
     {
       key: '/student-profile',
       icon: <UserOutlined />,
-      label: <Link to="/student-profile">个人资料设置</Link>,
+      label: <span ref={tourRef6}><Link to="/student-profile">个人资料设置</Link></span>,
     },
     {
       key: '/about',
@@ -339,7 +362,7 @@ export default function AdminLayout() {
         }}>
           <div className="cyber-card" style={{ padding: '12px 8px', marginBottom: 0, fontSize: 11, background: 'rgba(6,11,25,0.5)' }}>
             <span style={{ color: 'var(--cyber-primary)' }}>AI CORE ACTIVE By 邹钰萧</span>
-            <div style={{ color: 'var(--cyber-text-muted)', fontSize: 9, marginTop: 4 }}>V1.0.0-SECURE</div>
+            <div style={{ color: 'var(--cyber-text-muted)', fontSize: 9, marginTop: 4 }}>V1.1.0-SECURE</div>
           </div>
         </div>
       </Sider>
@@ -424,6 +447,59 @@ export default function AdminLayout() {
           <Outlet />
         </Content>
       </Layout>
+
+      {/* Onboarding Tour for student accounts */}
+      {userInfo?.role === 'student' && (
+        <Tour
+          open={tourOpen}
+          onClose={() => {
+            setTourOpen(false)
+            localStorage.setItem('onboardingDone_' + userInfo.id, 'true')
+          }}
+          onFinish={() => {
+            setTourOpen(false)
+            localStorage.setItem('onboardingDone_' + userInfo.id, 'true')
+            message.success('🎉 引导完成！开始你的心理成长之旅吧！')
+          }}
+          steps={[
+            {
+              title: '🌟 欢迎来到 EmotionGrowth AI！',
+              description: '这是你的专属心理成长空间。接下来我将带你熟悉系统的各个功能模块，帮助你更好地使用。',
+              target: () => tourRef1.current,
+            },
+            {
+              title: '📊 心理成长空间',
+              description: '在这里你可以记录每日情绪、写成长日记、查看情绪趋势曲线，还能与 AI 伙伴对话。',
+              target: () => tourRef1.current,
+            },
+            {
+              title: '📝 心理测评中心',
+              description: '完成20题心理自测问卷，了解自己的心理状态，获得AI分析报告。',
+              target: () => tourRef2.current,
+            },
+            {
+              title: '❤️ 情绪疏导中心',
+              description: '这里有4-7-8深呼吸练习、自然白噪音和反思日记，帮你快速放松身心。',
+              target: () => tourRef3.current,
+            },
+            {
+              title: '🏆 自我反馈与目标',
+              description: '设定每日成长小目标，完成打卡并写下反馈感悟，解锁成长徽章！',
+              target: () => tourRef4.current,
+            },
+            {
+              title: '🎵 心灵音乐屋',
+              description: '听疗愈音乐和脑波白噪音，配合呼吸练习，让大脑彻底放松。',
+              target: () => tourRef5.current,
+            },
+            {
+              title: '⚙️ 个人资料设置',
+              description: '在这里修改你的个人信息、账户安全设置和绑定第三方账号。',
+              target: () => tourRef6.current,
+            }
+          ]}
+        />
+      )}
     </Layout>
   )
 }

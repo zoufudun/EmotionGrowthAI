@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { Card, Button, Row, Col, Space, Tag, Input, List, Divider, message, Timeline } from 'antd'
 import { PlayCircleOutlined, PauseCircleOutlined, HeartOutlined, SoundOutlined, SmileOutlined, MessageOutlined } from '@ant-design/icons'
+import { UserContext } from '../App.jsx'
 
 const { TextArea } = Input
 
@@ -90,6 +91,8 @@ const startSynthesizer = (type) => {
 }
 
 export default function StudentCounseling() {
+  const { userInfo } = useContext(UserContext)
+
   // === 1. Breathing Trainer ===
   const [breathState, setBreathState] = useState('idle') // 'idle' | 'inhale' | 'hold' | 'exhale' | 'hold2'
   const [breathTimer, setBreathTimer] = useState(0)
@@ -188,16 +191,21 @@ export default function StudentCounseling() {
     }
   }, [])
 
-  // === 3. Daily Reflection Logs ===
+  // === 3. Daily Reflection Logs (per-user isolated) ===
+  const reflectiveLogsKey = 'reflectiveLogs_' + (userInfo?.id || 'default')
   const [reflectionInput, setReflectionInput] = useState('')
   const [reflections, setReflections] = useState(() => {
     try {
-      const saved = localStorage.getItem('reflectiveLogs')
+      const saved = localStorage.getItem(reflectiveLogsKey)
       if (saved) return JSON.parse(saved)
     } catch {}
-    return [
-      { id: '1', date: '2026-06-27 21:10', content: '今天最感激的一件小事是和同学在操场上散步，听到了鸟叫声，突然感觉整个人都放松下来了。' }
-    ]
+    // Only seed default data for the built-in student account
+    if (userInfo?.id === '1') {
+      return [
+        { id: '1', date: '2026-06-27 21:10', content: '今天最感激的一件小事是和同学在操场上散步，听到了鸟叫声，突然感觉整个人都放松下来了。' }
+      ]
+    }
+    return []
   })
 
   const handleSubmitReflection = () => {
@@ -218,7 +226,7 @@ export default function StudentCounseling() {
 
     const updated = [newLog, ...reflections]
     setReflections(updated)
-    localStorage.setItem('reflectiveLogs', JSON.stringify(updated))
+    localStorage.setItem(reflectiveLogsKey, JSON.stringify(updated))
     setReflectionInput('')
     message.success('已成功提交反思日记！您的积极认知正悄悄滋长')
   }

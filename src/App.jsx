@@ -152,6 +152,39 @@ export const UserProvider = ({ children }) => {
       throw new Error('账号或系统密钥错误')
     }
 
+    // === Default test account cleanup: clear all data for fresh testing ===
+    if (matchedUser.username === 'student') {
+      const testUserId = matchedUser.id
+      // Clear user-specific keys
+      localStorage.removeItem('moodCheckInHistory_' + testUserId)
+      localStorage.removeItem('reflectiveLogs_' + testUserId)
+      localStorage.removeItem('diaryDraft_student')
+      localStorage.removeItem('testDraft_student')
+      localStorage.removeItem('musicFavorites_student')
+      localStorage.removeItem('musicRelaxationLogs_student')
+      localStorage.removeItem('musicReminderActive_student')
+      localStorage.removeItem('onboardingDone_' + testUserId)
+
+      // Clean assessment records for this student
+      try {
+        const records = JSON.parse(localStorage.getItem('assessmentRecords') || '[]')
+        const cleaned = records.filter(r => r.studentName !== matchedUser.nickname)
+        localStorage.setItem('assessmentRecords', JSON.stringify(cleaned))
+      } catch {}
+
+      // Reset assigned tasks: remove this student's tasks, re-seed default
+      try {
+        const tasks = JSON.parse(localStorage.getItem('assignedTasks') || '[]')
+        const cleaned = tasks.filter(t => t.studentName !== matchedUser.nickname)
+        const seedTasks = [
+          { id: 'task-1', taskName: '主动运动', date: '2026-06-25', studentName: matchedUser.nickname, status: '已完成', feedback: '昨天慢跑了30分钟，心情舒畅多了！', className: matchedUser.className || '高一1班' },
+          { id: 'task-2', taskName: '整理错题', date: '2026-06-26', studentName: matchedUser.nickname, status: '进行中', feedback: '', className: matchedUser.className || '高一1班' }
+        ]
+        localStorage.setItem('assignedTasks', JSON.stringify([...cleaned, ...seedTasks]))
+        setAssignedTasks([...cleaned, ...seedTasks])
+      } catch {}
+    }
+
     const mockToken = 'token-' + Date.now()
     setToken(mockToken)
     setUserInfo(matchedUser)
@@ -312,6 +345,15 @@ export const UserProvider = ({ children }) => {
     message.success('您的账号已注销成功，感谢您的使用！')
   }
 
+  // === 5. User-filtered logs for data isolation ===
+  const getUserLogs = (userId, nickname) => {
+    if (!userId || !nickname) return []
+    return logs.filter(log => {
+      // Show logs where the operator contains this user's nickname
+      return log.operator && log.operator.includes(nickname)
+    })
+  }
+
   return (
     <UserContext.Provider value={{
       token,
@@ -323,6 +365,7 @@ export const UserProvider = ({ children }) => {
       updateUserInfo,
       logs,
       addLog,
+      getUserLogs,
       assignedTasks,
       setAssignedTasks,
       users,
